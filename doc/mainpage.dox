@@ -1,0 +1,9 @@
+/** \mainpage
+ *
+ *	"Object-orientiertes Studenten Betriebsystem"
+ *
+ *	This is the new release of the OOStuBs fo the EOS of the Otto-von-Guericke-University Magdeburg.
+ *  It is used as part of the practical exercises of the lecture "Betriebsysteme I".
+ *
+ *  Further information concerning the implementation and the used specifications for the hardware drivers are available at: http://www-ivs.cs.uni-magdeburg.de/eos/lehre/WS1011/vl_bs/uebung/
+ **/

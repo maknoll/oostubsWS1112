@@ -1,0 +1,289 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXFileReference section */
+		5B73945A145C5F2700C4F93D /* boot.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = boot.S; sourceTree = "<group>"; };
+		5B73945B145C5F2700C4F93D /* compat.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = compat.S; sourceTree = "<group>"; };
+		5B73945D145C5F2700C4F93D /* cgastr.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cgastr.cc; sourceTree = "<group>"; };
+		5B73945F145C5F2700C4F93D /* guardian.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = guardian.cc; sourceTree = "<group>"; };
+		5B739462145C5F2700C4F93D /* cgascr.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cgascr.cc; sourceTree = "<group>"; };
+		5B739463145C5F2700C4F93D /* keyctrl.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = keyctrl.cc; sourceTree = "<group>"; };
+		5B739464145C5F2700C4F93D /* main.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cc; sourceTree = "<group>"; };
+		5B739466145C5F2700C4F93D /* o_stream.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = o_stream.cc; sourceTree = "<group>"; };
+		5B739467145C5F2700C4F93D /* strbuf.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = strbuf.cc; sourceTree = "<group>"; };
+		5B73946A145C5F2700C4F93D /* task1.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = task1.cc; sourceTree = "<group>"; };
+		5B73946C145C5F3200C4F93D /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
+		5B73946E145C5F3200C4F93D /* cgastr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cgastr.h; sourceTree = "<group>"; };
+		5B739470145C5F3200C4F93D /* cgascr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cgascr.h; sourceTree = "<group>"; };
+		5B739471145C5F3200C4F93D /* io_port.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = io_port.h; sourceTree = "<group>"; };
+		5B739472145C5F3200C4F93D /* key.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = key.h; sourceTree = "<group>"; };
+		5B739473145C5F3200C4F93D /* keyctrl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = keyctrl.h; sourceTree = "<group>"; };
+		5B739474145C5F3200C4F93D /* multiboot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = multiboot.h; sourceTree = "<group>"; };
+		5B739476145C5F3200C4F93D /* o_stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = o_stream.h; sourceTree = "<group>"; };
+		5B739477145C5F3200C4F93D /* strbuf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = strbuf.h; sourceTree = "<group>"; };
+		5B739479145C5F3200C4F93D /* appl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = appl.h; sourceTree = "<group>"; };
+		5B73947A145C5F3200C4F93D /* task1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = task1.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		5B739447145C5E7E00C4F93D = {
+			isa = PBXGroup;
+			children = (
+				5B73946B145C5F3200C4F93D /* include */,
+				5B739458145C5F2700C4F93D /* src */,
+			);
+			sourceTree = "<group>";
+		};
+		5B739458145C5F2700C4F93D /* src */ = {
+			isa = PBXGroup;
+			children = (
+				5B739459145C5F2700C4F93D /* asm */,
+				5B73945C145C5F2700C4F93D /* device */,
+				5B73945E145C5F2700C4F93D /* guard */,
+				5B739460145C5F2700C4F93D /* machine */,
+				5B739464145C5F2700C4F93D /* main.cc */,
+				5B739465145C5F2700C4F93D /* object */,
+				5B739468145C5F2700C4F93D /* user */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+		5B739459145C5F2700C4F93D /* asm */ = {
+			isa = PBXGroup;
+			children = (
+				5B73945A145C5F2700C4F93D /* boot.S */,
+				5B73945B145C5F2700C4F93D /* compat.S */,
+			);
+			path = asm;
+			sourceTree = "<group>";
+		};
+		5B73945C145C5F2700C4F93D /* device */ = {
+			isa = PBXGroup;
+			children = (
+				5B73945D145C5F2700C4F93D /* cgastr.cc */,
+			);
+			path = device;
+			sourceTree = "<group>";
+		};
+		5B73945E145C5F2700C4F93D /* guard */ = {
+			isa = PBXGroup;
+			children = (
+				5B73945F145C5F2700C4F93D /* guardian.cc */,
+			);
+			path = guard;
+			sourceTree = "<group>";
+		};
+		5B739460145C5F2700C4F93D /* machine */ = {
+			isa = PBXGroup;
+			children = (
+				5B739462145C5F2700C4F93D /* cgascr.cc */,
+				5B739463145C5F2700C4F93D /* keyctrl.cc */,
+			);
+			path = machine;
+			sourceTree = "<group>";
+		};
+		5B739465145C5F2700C4F93D /* object */ = {
+			isa = PBXGroup;
+			children = (
+				5B739466145C5F2700C4F93D /* o_stream.cc */,
+				5B739467145C5F2700C4F93D /* strbuf.cc */,
+			);
+			path = object;
+			sourceTree = "<group>";
+		};
+		5B739468145C5F2700C4F93D /* user */ = {
+			isa = PBXGroup;
+			children = (
+				5B73946A145C5F2700C4F93D /* task1.cc */,
+			);
+			path = user;
+			sourceTree = "<group>";
+		};
+		5B73946B145C5F3200C4F93D /* include */ = {
+			isa = PBXGroup;
+			children = (
+				5B73946C145C5F3200C4F93D /* config.h */,
+				5B73946D145C5F3200C4F93D /* device */,
+				5B73946F145C5F3200C4F93D /* machine */,
+				5B739475145C5F3200C4F93D /* object */,
+				5B739478145C5F3200C4F93D /* user */,
+			);
+			path = include;
+			sourceTree = SOURCE_ROOT;
+		};
+		5B73946D145C5F3200C4F93D /* device */ = {
+			isa = PBXGroup;
+			children = (
+				5B73946E145C5F3200C4F93D /* cgastr.h */,
+			);
+			path = device;
+			sourceTree = "<group>";
+		};
+		5B73946F145C5F3200C4F93D /* machine */ = {
+			isa = PBXGroup;
+			children = (
+				5B739470145C5F3200C4F93D /* cgascr.h */,
+				5B739471145C5F3200C4F93D /* io_port.h */,
+				5B739472145C5F3200C4F93D /* key.h */,
+				5B739473145C5F3200C4F93D /* keyctrl.h */,
+				5B739474145C5F3200C4F93D /* multiboot.h */,
+			);
+			path = machine;
+			sourceTree = "<group>";
+		};
+		5B739475145C5F3200C4F93D /* object */ = {
+			isa = PBXGroup;
+			children = (
+				5B739476145C5F3200C4F93D /* o_stream.h */,
+				5B739477145C5F3200C4F93D /* strbuf.h */,
+			);
+			path = object;
+			sourceTree = "<group>";
+		};
+		5B739478145C5F3200C4F93D /* user */ = {
+			isa = PBXGroup;
+			children = (
+				5B739479145C5F3200C4F93D /* appl.h */,
+				5B73947A145C5F3200C4F93D /* task1.h */,
+			);
+			path = user;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		5B32B996145F420B005A80DC /* oostubs */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION)";
+			buildConfigurationList = 5B32B997145F420B005A80DC /* Build configuration list for PBXLegacyTarget "oostubs" */;
+			buildPhases = (
+			);
+			buildToolPath = /usr/bin/make;
+			dependencies = (
+			);
+			name = oostubs;
+			passBuildSettingsInEnvironment = 1;
+			productName = oostubs;
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXProject section */
+		5B739449145C5E7E00C4F93D /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+				ORGANIZATIONNAME = "Otto-von-Guericke-Universität Magdeburg";
+			};
+			buildConfigurationList = 5B73944C145C5E7E00C4F93D /* Build configuration list for PBXProject "oostubs" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 5B739447145C5E7E00C4F93D;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				5B32B996145F420B005A80DC /* oostubs */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		5B32B998145F420B005A80DC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUGGING_SYMBOLS = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		5B32B999145F420B005A80DC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		5B73944E145C5E7E00C4F93D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		5B73944F145C5E7E00C4F93D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		5B32B997145F420B005A80DC /* Build configuration list for PBXLegacyTarget "oostubs" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5B32B998145F420B005A80DC /* Debug */,
+				5B32B999145F420B005A80DC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		5B73944C145C5E7E00C4F93D /* Build configuration list for PBXProject "oostubs" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5B73944E145C5E7E00C4F93D /* Debug */,
+				5B73944F145C5E7E00C4F93D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 5B739449145C5E7E00C4F93D /* Project object */;
+}

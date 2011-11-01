@@ -1,0 +1,42 @@
+SECTIONS 
+ {
+   . = 0x100000;     /* Startadresse des Systems */
+
+   .text :
+    {
+      *(".text")
+      *(".text$")
+      *(".init")
+      *(".fini") 
+      *(".gnu.linkonce.*")
+    }
+
+   .data :
+    {
+      *(".data")
+      *(".data$")
+      *(".rodata")
+      ___CTOR_LIST__ = .;
+      *(".ctors")
+      *(".ctor")
+      ___CTOR_LIST_END__ = .;
+      ___DTOR_LIST__ = .;
+      *(".dtors")
+      *(".dtor")
+      ___DTOR_LIST_END__ = .;
+      *(".got")
+      *(".got.plt")
+      *(".jcr")
+    }
+
+   .bss : 
+    {
+      *(".bss")
+    }
+   /DISCARD/ :
+    {
+      *(".note")
+      *(".comment")
+    }
+ }
+
