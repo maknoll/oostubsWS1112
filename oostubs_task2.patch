@@ -1,0 +1,621 @@
+>From f06091c6bcd8f937c3289cde53ce31db3cbcd8a7 Mon Sep 17 00:00:00 2001
+From: Christoph Steup <christoph.steup@student.uni-magdeburg.de>
+Date: Mon, 1 Nov 2010 12:42:25 +0100
+Subject: [PATCH 1/2] BUG_Fix: signed byte type in io-operations
+
+---
+ include/machine/io_port.h |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/include/machine/io_port.h b/include/machine/io_port.h
+index 9daac9a..c040a03 100644
+--- a/include/machine/io_port.h
++++ b/include/machine/io_port.h
+@@ -49,7 +49,7 @@ public:
+    *
+    * @return the read byte value
+    */
+-  char inb () const {
++  unsigned char inb () const {
+ 	volatile char val=0;
+     asm(
+ 		"in %0, %%al\t\n"
+@@ -65,7 +65,7 @@ public:
+    *
+    * @return the read word value
+    */
+-  short inw () const { 	
++  unsigned short inw () const { 	
+ 	volatile short val=0;
+     asm(
+ 		"in %0, %%ax\t\n"
+-- 
+1.7.2.2
+
+
+>From 6a3a13281411cc97402a87cb1d6886e294f1cc72 Mon Sep 17 00:00:00 2001
+From: Christoph Steup <christoph.steup@student.uni-magdeburg.de>
+Date: Mon, 1 Nov 2010 15:39:36 +0100
+Subject: [PATCH 2/2] Task2 of OOStuBs without solution
+
+---
+ Makefile                  |    2 +-
+ include/device/keyboard.h |   43 +++++++++++++++++++++++++++
+ include/device/panic.h    |   33 +++++++++++++++++++++
+ include/guard/gate.h      |   31 ++++++++++++++++++++
+ include/machine/cpu.h     |   40 +++++++++++++++++++++++++
+ include/machine/keyctrl.h |    2 +-
+ include/machine/pic.h     |   70 +++++++++++++++++++++++++++++++++++++++++++++
+ include/machine/plugbox.h |   57 ++++++++++++++++++++++++++++++++++++
+ include/user/task2.h      |   27 +++++++++++++++++
+ src/device/keyboard.cc    |   15 +++++++++
+ src/device/panic.cc       |   13 ++++++++
+ src/machine/pic.cc        |   30 +++++++++++++++++++
+ src/machine/plugbox.cc    |   15 +++++++++
+ src/main.cc               |    5 ++-
+ src/user/task2.cc         |   46 +++++++++++++++++++++++++++++
+ 15 files changed, 425 insertions(+), 4 deletions(-)
+ create mode 100644 include/device/keyboard.h
+ create mode 100644 include/device/panic.h
+ create mode 100644 include/guard/gate.h
+ create mode 100644 include/machine/cpu.h
+ create mode 100644 include/machine/pic.h
+ create mode 100644 include/machine/plugbox.h
+ create mode 100644 include/user/task2.h
+ create mode 100644 src/device/keyboard.cc
+ create mode 100644 src/device/panic.cc
+ create mode 100644 src/machine/pic.cc
+ create mode 100644 src/machine/plugbox.cc
+ create mode 100644 src/user/task2.cc
+
+diff --git a/Makefile b/Makefile
+index 2dd1e1e..61322ad 100644
+--- a/Makefile
++++ b/Makefile
+@@ -9,7 +9,7 @@ CXXFLAGS=
+ LDFLAGS=-O0
+ ASMFLAGS=-g
+ 
+-OBJECT_IGNORE= task1.o
++OBJECT_IGNORE= task1.o task2.o
+ 
+ INCPATHS=
+ LDPATHS=
+diff --git a/include/device/keyboard.h b/include/device/keyboard.h
+new file mode 100644
+index 0000000..31d705e
+--- /dev/null
++++ b/include/device/keyboard.h
+@@ -0,0 +1,43 @@
++/*---------------------------------------------------------------------------*
++ * Operating Systems I                                                       *
++ *---------------------------------------------------------------------------*
++ *                                                                           *
++ *                            K E Y B O A R D                                *
++ *                                                                           *
++ *---------------------------------------------------------------------------*/
++
++#ifndef __Keyboard_include__
++#define __Keyboard_include__
++
++#include "machine/keyctrl.h"
++#include "guard/gate.h"
++#include "machine/key.h"
++ 
++/** \brief %Keyboard driver with interrupt support
++ *
++ * This class is a subclass of Gate and implements the interrupt routine used 
++ * for the keyboard.
++ */
++class Keyboard : public Keyboard_Controller, public Gate  {
++   
++public:
++   
++  /** \brief enable the interrupt mechanism of the keyboard
++   *
++   * \todo write implementation
++   *
++   * Method plugin() enables all keyboard interrupts. After calling plugin()
++   * interrupts activated by the keyboard are recognised.
++   */
++  void plugin ();
++
++  /** \brief handle keyboard interrupt
++   *
++   *  \todo write implementation
++   *
++   * **/
++  
++  virtual void trigger ();
++};
++
++#endif
+diff --git a/include/device/panic.h b/include/device/panic.h
+new file mode 100644
+index 0000000..47d091d
+--- /dev/null
++++ b/include/device/panic.h
+@@ -0,0 +1,33 @@
++/*---------------------------------------------------------------------------*
++ * Operating Systems I                                                       *
++ *---------------------------------------------------------------------------*
++ *                                                                           *
++ *                                 P A N I C                                 *
++ *                                                                           *
++ *---------------------------------------------------------------------------*/
++
++#ifndef __panic_include__
++#define __panic_include__
++
++/* INCLUDES */
++#include "guard/gate.h"
++
++/** \brief Default interrupt handler
++ *
++ * This class is a subclass of Gate and implements a standard interrupt routine
++ * used as default for unknown/registered interrupts.
++ */
++class Panic  : public Gate {
++public:
++  
++  /** \brief handle unknown/unregistered interrupt 
++   *
++   *  \todo write implementation
++   *
++   * For debug purposes the cpu will be halted if an unknown interrupt occurs.
++   **/
++  virtual void trigger();
++
++};
++
++#endif
+diff --git a/include/guard/gate.h b/include/guard/gate.h
+new file mode 100644
+index 0000000..16600c1
+--- /dev/null
++++ b/include/guard/gate.h
+@@ -0,0 +1,31 @@
++/*---------------------------------------------------------------------------*
++ * Operating Systems I                                                       *
++ *---------------------------------------------------------------------------*
++ *                                                                           *
++ *                                  G A T E                                  *
++ *                                                                           *
++ *---------------------------------------------------------------------------*/
++
++#ifndef __Gate_include__
++#define __Gate_include__
++
++/** \brief Interrupt handling base class
++ *
++ * Superclass of a set of classes that are able to handle interrupts. Every
++ * subclass of Gate has to implement method trigger() with appropriated
++ * behavior.
++ **/
++class Gate {
++  
++public:
++  /** \brief interrupt handling method
++   *
++   * This method is called after an interrupt occured. It is executed 
++   * asynchronous to other activities of the operation system. To enable 
++   * different behavior according to the occured interrupt this method has to 
++   * be implemented in a subclasses of Gate.
++   **/
++	virtual void trigger() = 0;
++};
++
++#endif
+diff --git a/include/machine/cpu.h b/include/machine/cpu.h
+new file mode 100644
+index 0000000..0dc8f77
+--- /dev/null
++++ b/include/machine/cpu.h
+@@ -0,0 +1,40 @@
++/*---------------------------------------------------------------------------*
++ * Operating Systems I                                                       *
++ *---------------------------------------------------------------------------*
++ *                                                                           *
++ *                                   C P U                                   *
++ *                                                                           *
++ *---------------------------------------------------------------------------*/
++
++#ifndef __CPU_include__
++#define __CPU_include__
++
++/** \brief Hardware accessor for %CPU specific instructions
++ *
++ * Class CPU implements an abstraction of the processor. It provides methods to
++ * enable/disable interrupts globally and to halt the processor.
++ */
++class CPU {
++public:
++  /** \brief globally enable interrupts **/
++  inline void enable_int () {
++    asm("sti");
++  }
++
++  /** \brief globally dissable interrupts **/
++  inline void disable_int () {
++    asm("cli");
++  }
++
++  /** \brief halt the cpu
++   *
++   * When the cpu is halted the program counter will not increase until an
++   * interrupt occurs.  If an interrupt occurs the cpu will handle the
++   * interrupt and continue with the execution after the halt command.
++   */
++  inline void halt () {
++    asm("hlt");
++  }
++};
++
++#endif
+diff --git a/include/machine/keyctrl.h b/include/machine/keyctrl.h
+index 46813f4..c919444 100644
+--- a/include/machine/keyctrl.h
++++ b/include/machine/keyctrl.h
+@@ -12,7 +12,7 @@
+ #include "machine/io_port.h"
+ #include "machine/key.h"
+ 
+-/** \brief Keyboard driver
++/** \brief %Keyboard driver
+  *
+  * Abstraction of the keyboad controller of a computer.
+  */
+diff --git a/include/machine/pic.h b/include/machine/pic.h
+new file mode 100644
+index 0000000..ab9bd48
+--- /dev/null
++++ b/include/machine/pic.h
+@@ -0,0 +1,70 @@
++/*---------------------------------------------------------------------------*
++ * Operating Systems I                                                       *
++ *---------------------------------------------------------------------------*
++ *                                                                           *
++ *                                  P I C                                    *
++ *                                                                           *
++ *---------------------------------------------------------------------------*/
++
++#ifndef __pic_include__
++#define __pic_include__
++
++#include "machine/io_port.h"
++
++/** \brief Driver for Programmable Interrupt Controller
++ *
++ * The PIC or Programmable Interrupt Controller enables the system to 
++ * allow/forbid interrupts. By allowing an interrupt the PIC defines which
++ * interrupts are handled by the system. It is important that interrupts will
++ * only be handled if the interrupt has been allowed and if the handling of 
++ * interrupts is enabled (see class CPU). 
++ */
++class PIC {
++public:
++	/** \brief External interrupt sources **/
++	enum Interrupts
++	{
++		keyboard = 1	/**< Keyboard controller **/
++	};
++
++   /** \brief Default Constructor
++	*
++	* Setting up the PIC and masking all incoming interrupt channels
++	**/
++   PIC();
++
++  /** \brief allow a specific hardware interrupt
++   *
++   * \todo write implementation
++   *
++   * Enables the system to handle interrupts of the specified 
++   * device using the PIC. To enable the handling of any interrupt 
++   * CPU::enable_int() has to be called first.
++   *
++   * \param interrupt number of interrupt that will be allowed
++   */
++   void allow(Interrupts interrupt);
++
++  /** \brief forbid a specific hardware interrupt
++   *
++   * \todo write implementation
++   *
++   * Disables an interrupt useing the PIC.
++   *
++   * \param interrupt number of interrupt that will be forbiden
++   */
++   void forbid(Interrupts interrupt); 
++
++  /** \brief acknowledge the handling of a pending interrupt
++   *
++   *  \todo write implementation
++   *
++   * Acknowledge an occured interrupt. This tells the PIC that his last
++   * interrupt has been handled. This Method has to be called before the cpu is
++   * allowed to handle any new interrupts. If an interrupt is not acknowledged
++   * the same interrupt is called again and again.
++   */
++   void ack();
++};
++
++#endif
+diff --git a/include/machine/plugbox.h b/include/machine/plugbox.h
+new file mode 100644
+index 0000000..f9d3c93
+--- /dev/null
++++ b/include/machine/plugbox.h
+@@ -0,0 +1,57 @@
++/*---------------------------------------------------------------------------*
++ * Operating Systems I                                                       *
++ *---------------------------------------------------------------------------*
++ *                                                                           *
++ *                              P L U G B O X                                *
++ *                                                                           *
++ *---------------------------------------------------------------------------*/
++
++#ifndef __Plugbox_include__
++#define __Plugbox_include__
++
++#include "guard/gate.h"
++
++/** \brief Interrupt forwarding administration unit
++ *
++ * This Class is  an abstraction of the IDT (interrupt descriptor table). It
++ * enables the system to define an appropriate handling routine for every hard
++ * and software interrupt.
++ **/
++class Plugbox {
++private:
++  /** \brief array of pointers to Gate objects
++   *
++   * \todo write declaration
++   **/
++
++public:
++   
++  /** \brief Default constructor
++   *
++   * \todo write implementation
++   *
++   * initialising the map with Panic Gates. 
++   **/
++  Plugbox ();
++
++  /** \brief assign a Gate object to a specific interrupt
++   *
++   * \todo write implementation
++   *
++   * \param slot number of interrupt the gate object will be assigned to
++   * \param gate reference of the gate object containing the handling routine 
++   *             for the interrupt
++   */
++   void assign(unsigned short slot, Gate& gate) ;
++
++  /** \brief report the assigned Gate object for a specific interrupt
++   *
++   * \todo write implementation
++   *
++   * \param slot number of occured interrupt 
++   * \return reference of the Gate object or the Panic gate, if none was assigned
++   */
++  Gate& report(unsigned short slot);
++};
++
++#endif
+diff --git a/include/user/task2.h b/include/user/task2.h
+new file mode 100644
+index 0000000..66ca216
+--- /dev/null
++++ b/include/user/task2.h
+@@ -0,0 +1,27 @@
++#include "user/appl.h"
++
++/** \brief Second test application
++ *
++ * This application test the functionality of the implemented interrupt system.
++ * It prints the task identification and then repeatedly draws a line in an
++ * endless loop.  Interrupts from the keyboard are printed onto the screen to a
++ * fixed location. This should disturb the drawing of the line.
++ **/
++
++class Task2 : public Application{
++	public:
++		/** \brief Default constructor
++		 *
++		 * prints task information and enables interrupts
++		 **/
++		Task2();
++
++		/** \brief Destructor
++		 *
++		 * disables interrupts, should never be called due to the endless loop
++		 **/
++		virtual ~Task2();
++
++		/** \brief prints the line **/
++		virtual void action();
++};
+diff --git a/src/device/keyboard.cc b/src/device/keyboard.cc
+new file mode 100644
+index 0000000..3b03ec3
+--- /dev/null
++++ b/src/device/keyboard.cc
+@@ -0,0 +1,15 @@
++/*---------------------------------------------------------------------------*
++ * Operating Systems I                                                       *
++ *---------------------------------------------------------------------------*
++ *                                                                           *
++ *                            K E Y B O A R D                                *
++ *                                                                           *
++ *---------------------------------------------------------------------------*/
++
++/* INCLUDES */
++#include "device/keyboard.h"
++
++/* GLOBAL VARIABLS */
++
++/* METHODS */
++
+diff --git a/src/device/panic.cc b/src/device/panic.cc
+new file mode 100644
+index 0000000..fd09a46
+--- /dev/null
++++ b/src/device/panic.cc
+@@ -0,0 +1,13 @@
++/*---------------------------------------------------------------------------*
++ * Operating Systems I                                                       *
++ *---------------------------------------------------------------------------*
++ *                                                                           *
++ *                                 P A N I C                                 *
++ *                                                                           *
++ *---------------------------------------------------------------------------*/
++
++/* INCLUDES */
++#include "device/panic.h"
++
++/* GLOBAL VARIABLES */
++
+diff --git a/src/machine/pic.cc b/src/machine/pic.cc
+new file mode 100644
+index 0000000..db32e59
+--- /dev/null
++++ b/src/machine/pic.cc
+@@ -0,0 +1,30 @@
++/*---------------------------------------------------------------------------*
++ * Operating Systems I                                                       *
++ *---------------------------------------------------------------------------*
++ *                                                                           *
++ *                                  P I C                                    *
++ *                                                                           *
++ *---------------------------------------------------------------------------*/
++
++#include "machine/pic.h"
++#include "machine/io_port.h"
++
++PIC::PIC(){
++
++	IO_Port ctrl_1(0x20), ctrl_2(0xa0), mask_1(0x21), mask_2(0xa1);
++
++	ctrl_1.outb(0x11);
++	ctrl_2.outb(0x11);
++
++	mask_1.outb(32);
++	mask_2.outb(40);
++
++	mask_1.outb(4);
++	mask_2.outb(2);
++
++	mask_1.outb(3);
++	mask_2.outb(3);
++
++	mask_1.outb(0xFB);
++	mask_2.outb(0xFF);
++}
+diff --git a/src/machine/plugbox.cc b/src/machine/plugbox.cc
+new file mode 100644
+index 0000000..74b3775
+--- /dev/null
++++ b/src/machine/plugbox.cc
+@@ -0,0 +1,15 @@
++/*---------------------------------------------------------------------------*
++ * Operating Systems I                                                       *
++ *---------------------------------------------------------------------------*
++ *                                                                           *
++ *                              P L U G B O X                                *
++ *                                                                           *
++ *---------------------------------------------------------------------------*/
++
++/* INCLUDES */
++#include "machine/plugbox.h"
++
++/* GLOBALE VARIABLES */
++
++/* METHODEN */
++
+diff --git a/src/main.cc b/src/main.cc
+index 3a4718c..07b0fe5 100644
+--- a/src/main.cc
++++ b/src/main.cc
+@@ -9,6 +9,7 @@
+ /* INCLUDES */
+ 
+ #include "machine/multiboot.h"
++//#include "user/task2.h"
+ 
+ /* GLOBAL OBJECTS */
+ 
+@@ -23,7 +24,7 @@ extern "C" void kernel(uint32_t magic, const Multiboot_Info* addr);
+  * This is the entry point of the operating system.  If this function returns
+  * all interrupts will be disabled and the cpu will be halted.
+  *
+- * \todo uncomment Task1
++ * \todo uncomment Task2
+  *
+  * \param magic bootloader magic value
+  * \param addr address of multiboot info structure
+@@ -31,7 +32,7 @@ extern "C" void kernel(uint32_t magic, const Multiboot_Info* addr);
+ 
+ void kernel(uint32_t magic, const Multiboot_Info* addr){
+ 
+-//Task1 task(magic, addr);
++//Task2 task;
+ 
+ //task.action();
+ 
+diff --git a/src/user/task2.cc b/src/user/task2.cc
+new file mode 100644
+index 0000000..09a9e6c
+--- /dev/null
++++ b/src/user/task2.cc
+@@ -0,0 +1,46 @@
++#include "user/task2.h"
++#include "device/cgastr.h"
++#include "machine/cpu.h"
++
++extern CGA_Stream kout;
++extern CPU cpu;
++
++Task2::Task2(){
++	kout.setpos(31,1);
++	kout << "OOStuBs - Task 2" << endl << endl;
++
++	cpu.enable_int();
++}
++
++Task2::~Task2(){
++
++	cpu.disable_int();
++}
++
++void Task2::action(){
++	unsigned short x,y;
++	unsigned char i=0;
++
++	kout.getpos(x,y);
++	while(1)
++	{
++		kout.setpos(x,y);
++		for(unsigned short j=0;j<39;j++)
++			kout << "-";
++			kout.flush();
++		switch(i++%4)
++		{
++			case(0): kout << "//";
++					 break;
++			case(1): kout << "--";
++					 break;
++			case(2): kout << "\\\\";
++					 break;
++			case(3): kout << "||";
++					 break;
++		}
++		for(unsigned short j=0;j<39;j++)
++			kout << "-";
++		kout << endl;
++	}
++}
+-- 
+1.7.2.2
+

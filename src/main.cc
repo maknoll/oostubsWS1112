@@ -12,6 +12,7 @@
 #include "device/cgastr.h"
 #include "machine/keyctrl.h"
 #include "user/task1.h"
+#include "user/task2.h"
 
 /* GLOBAL OBJECTS */
 
@@ -29,7 +30,7 @@ extern "C" void kernel(uint32_t magic, const Multiboot_Info* addr);
  * This is the entry point of the operating system.  If this function returns
  * all interrupts will be disabled and the cpu will be halted.
  *
- * \todo uncomment Task1
+ * \todo uncomment Task2
  *
  * \param magic bootloader magic value
  * \param addr address of multiboot info structure
@@ -37,7 +38,9 @@ extern "C" void kernel(uint32_t magic, const Multiboot_Info* addr);
 
 void kernel(uint32_t magic, const Multiboot_Info* addr){
 
-Task1 task(magic, addr);
+Task1 task(magic, addr); 
+
+//Task2 task;
 
 task.action();
 

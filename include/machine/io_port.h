@@ -49,7 +49,7 @@ public:
    *
    * @return the read byte value
    */
-  char inb () const {
+  unsigned char inb () const {
 	volatile char val=0;
     asm(
 		"in %0, %%al\t\n"
@@ -65,7 +65,7 @@ public:
    *
    * @return the read word value
    */
-  short inw () const { 	
+  unsigned short inw () const { 	
 	volatile short val=0;
     asm(
 		"in %0, %%ax\t\n"
