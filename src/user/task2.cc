@@ -9,36 +9,36 @@ Task2::Task2(){
     kout.clear();
 	kout.setpos(31,1);
 	kout << "OOStuBs - Task 2" << endl << endl;
-
+    
 	cpu.enable_int();
 }
 
 Task2::~Task2(){
-
+    
 	cpu.disable_int();
 }
 
 void Task2::action(){
 	unsigned short x,y;
 	unsigned char i=0;
-
+    
 	kout.getpos(x,y);
 	while(1)
 	{
 		kout.setpos(x,y);
 		for(unsigned short j=0;j<39;j++)
 			kout << "-";
-			kout.flush();
+        kout.flush();
 		switch(i++%4)
 		{
 			case(0): kout << "//";
-					 break;
+                break;
 			case(1): kout << "--";
-					 break;
+                break;
 			case(2): kout << "\\\\";
-					 break;
+                break;
 			case(3): kout << "||";
-					 break;
+                break;
 		}
 		for(unsigned short j=0;j<39;j++)
 			kout << "-";

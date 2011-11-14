@@ -26,45 +26,45 @@ public:
 	{
 		keyboard = 1	/**< Keyboard controller **/
 	};
-
-   /** \brief Default Constructor
-	*
-	* Setting up the PIC and masking all incoming interrupt channels
-	**/
-   PIC();
-
-  /** \brief allow a specific hardware interrupt
-   *
-   * \todo write implementation
-   *
-   * Enables the system to handle interrupts of the specified 
-   * device using the PIC. To enable the handling of any interrupt 
-   * CPU::enable_int() has to be called first.
-   *
-   * \param interrupt number of interrupt that will be allowed
-   */
-   void allow(Interrupts interrupt);
-
-  /** \brief forbid a specific hardware interrupt
-   *
-   * \todo write implementation
-   *
-   * Disables an interrupt useing the PIC.
-   *
-   * \param interrupt number of interrupt that will be forbiden
-   */
-   void forbid(Interrupts interrupt); 
-
-  /** \brief acknowledge the handling of a pending interrupt
-   *
-   *  \todo write implementation
-   *
-   * Acknowledge an occured interrupt. This tells the PIC that his last
-   * interrupt has been handled. This Method has to be called before the cpu is
-   * allowed to handle any new interrupts. If an interrupt is not acknowledged
-   * the same interrupt is called again and again.
-   */
-   void ack();
+    
+    /** \brief Default Constructor
+     *
+     * Setting up the PIC and masking all incoming interrupt channels
+     **/
+    PIC();
+    
+    /** \brief allow a specific hardware interrupt
+     *
+     * \todo write implementation
+     *
+     * Enables the system to handle interrupts of the specified 
+     * device using the PIC. To enable the handling of any interrupt 
+     * CPU::enable_int() has to be called first.
+     *
+     * \param interrupt number of interrupt that will be allowed
+     */
+    void allow(Interrupts interrupt);
+    
+    /** \brief forbid a specific hardware interrupt
+     *
+     * \todo write implementation
+     *
+     * Disables an interrupt useing the PIC.
+     *
+     * \param interrupt number of interrupt that will be forbiden
+     */
+    void forbid(Interrupts interrupt); 
+    
+    /** \brief acknowledge the handling of a pending interrupt
+     *
+     *  \todo write implementation
+     *
+     * Acknowledge an occured interrupt. This tells the PIC that his last
+     * interrupt has been handled. This Method has to be called before the cpu is
+     * allowed to handle any new interrupts. If an interrupt is not acknowledged
+     * the same interrupt is called again and again.
+     */
+    void ack();
 };
 
 #endif

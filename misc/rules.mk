@@ -85,7 +85,7 @@ run: ${EMUTARGET}
 
 debug: ${TARGET}
 	@echo "(DEBUG)"
-	${EMU} ${EMUFLAGS} $< ${EMUDEBUG} -S -s -daemonize && ${GDB} ${TARGET} ${GDBFLAGS}
+	${EMU} ${EMUFLAGS} $< ${EMUDEBUG} -S -s & sleep 1 && ${GDB} ${TARGET} ${GDBFLAGS}
 
 doc: ${DOC}/html/index.html
 	
