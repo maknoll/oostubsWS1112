@@ -10,5 +10,6 @@
  include/device/cgastr.h include/object/o_stream.h \
  include/object/strbuf.h include/machine/cgascr.h \
  include/machine/keyctrl.h include/machine/io_port.h \
- include/machine/key.h include/user/task1.h include/user/appl.h \
- include/user/task2.h
+ include/machine/key.h include/machine/pic.h include/machine/cpu.h \
+ include/machine/plugbox.h include/guard/gate.h include/device/keyboard.h \
+ include/user/task2.h include/user/appl.h

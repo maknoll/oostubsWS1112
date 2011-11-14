@@ -2,12 +2,12 @@ CC=/usr/local/gcc-4.5.2-for-linux32/bin/i586-pc-linux-gcc
 CXX=/usr/local/gcc-4.5.2-for-linux32/bin/i586-pc-linux-g++
 ASM=/usr/local/gcc-4.5.2-for-linux32/bin/i586-pc-linux-gcc
 LD=/usr/local/gcc-4.5.2-for-linux32/bin/i586-pc-linux-ld
-EMU=qemu
+EMU=/usr/local/bin/qemu
 EMUTARGET=${TARGET}
 GDB=gdb
 SED=sed
 OBJDUMP=objdump
-DOCGEN=doxygen
+DOCGEN=/Applications/Doxygen.app/Contents/Resources/doxygen
 
 CFLAGS+=-fno-exceptions
 CXXFLAGS+=${CFLAGS} -fno-rtti -nostdinc++

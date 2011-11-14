@@ -11,7 +11,10 @@
 #include "machine/multiboot.h"
 #include "device/cgastr.h"
 #include "machine/keyctrl.h"
-#include "user/task1.h"
+#include "machine/pic.h"
+#include "machine/cpu.h"
+#include "machine/plugbox.h"
+#include "device/keyboard.h"
 #include "user/task2.h"
 
 /* GLOBAL OBJECTS */
@@ -19,7 +22,10 @@
 /** \todo define global objects **/
 
 CGA_Stream kout;
-Keyboard_Controller keyboard; 
+PIC pic;
+CPU cpu;
+Plugbox plugbox;
+Keyboard keyboard;
 
 /* METHODS  */
 
@@ -38,10 +44,12 @@ extern "C" void kernel(uint32_t magic, const Multiboot_Info* addr);
 
 void kernel(uint32_t magic, const Multiboot_Info* addr){
 
-Task1 task(magic, addr); 
+//  Task1 task(magic, addr); 
+    
+    keyboard.plugin();
 
-//Task2 task;
+    Task2 task;
 
-task.action();
+    task.action();
 
 }

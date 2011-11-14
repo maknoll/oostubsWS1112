@@ -23,8 +23,14 @@ private:
    *
    * \todo write declaration
    **/
-
+    Gate* gates[256];
+    
 public:
+    enum Slots
+    {
+        timer = 32,
+        keyboard = 33
+    };
    
   /** \brief Default constructor
    *

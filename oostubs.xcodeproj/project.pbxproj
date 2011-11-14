@@ -28,6 +28,18 @@
 		5B739477145C5F3200C4F93D /* strbuf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = strbuf.h; sourceTree = "<group>"; };
 		5B739479145C5F3200C4F93D /* appl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = appl.h; sourceTree = "<group>"; };
 		5B73947A145C5F3200C4F93D /* task1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = task1.h; sourceTree = "<group>"; };
+		5BE3C04514606BC500CACEE8 /* keyboard.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = keyboard.cc; sourceTree = "<group>"; };
+		5BE3C04614606BC500CACEE8 /* panic.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = panic.cc; sourceTree = "<group>"; };
+		5BE3C04814606BEC00CACEE8 /* keyboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = keyboard.h; sourceTree = "<group>"; };
+		5BE3C04914606BEC00CACEE8 /* panic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = panic.h; sourceTree = "<group>"; };
+		5BE3C04A14606C1700CACEE8 /* cpu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cpu.h; sourceTree = "<group>"; };
+		5BE3C04B14606C1700CACEE8 /* pic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pic.h; sourceTree = "<group>"; };
+		5BE3C04C14606C1700CACEE8 /* plugbox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = plugbox.h; sourceTree = "<group>"; };
+		5BE3C04D14606C4700CACEE8 /* task2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = task2.h; sourceTree = "<group>"; };
+		5BE3C04E14606C7A00CACEE8 /* pic.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pic.cc; sourceTree = "<group>"; };
+		5BE3C04F14606C7A00CACEE8 /* plugbox.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = plugbox.cc; sourceTree = "<group>"; };
+		5BE3C05014606C9700CACEE8 /* task2.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = task2.cc; sourceTree = "<group>"; };
+		5BE3C05214606D1A00CACEE8 /* gate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gate.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -65,6 +77,8 @@
 		5B73945C145C5F2700C4F93D /* device */ = {
 			isa = PBXGroup;
 			children = (
+				5BE3C04514606BC500CACEE8 /* keyboard.cc */,
+				5BE3C04614606BC500CACEE8 /* panic.cc */,
 				5B73945D145C5F2700C4F93D /* cgastr.cc */,
 			);
 			path = device;
@@ -81,6 +95,8 @@
 		5B739460145C5F2700C4F93D /* machine */ = {
 			isa = PBXGroup;
 			children = (
+				5BE3C04E14606C7A00CACEE8 /* pic.cc */,
+				5BE3C04F14606C7A00CACEE8 /* plugbox.cc */,
 				5B739462145C5F2700C4F93D /* cgascr.cc */,
 				5B739463145C5F2700C4F93D /* keyctrl.cc */,
 			);
@@ -99,6 +115,7 @@
 		5B739468145C5F2700C4F93D /* user */ = {
 			isa = PBXGroup;
 			children = (
+				5BE3C05014606C9700CACEE8 /* task2.cc */,
 				5B73946A145C5F2700C4F93D /* task1.cc */,
 			);
 			path = user;
@@ -107,6 +124,7 @@
 		5B73946B145C5F3200C4F93D /* include */ = {
 			isa = PBXGroup;
 			children = (
+				5BE3C05114606D1A00CACEE8 /* guard */,
 				5B73946C145C5F3200C4F93D /* config.h */,
 				5B73946D145C5F3200C4F93D /* device */,
 				5B73946F145C5F3200C4F93D /* machine */,
@@ -119,6 +137,8 @@
 		5B73946D145C5F3200C4F93D /* device */ = {
 			isa = PBXGroup;
 			children = (
+				5BE3C04814606BEC00CACEE8 /* keyboard.h */,
+				5BE3C04914606BEC00CACEE8 /* panic.h */,
 				5B73946E145C5F3200C4F93D /* cgastr.h */,
 			);
 			path = device;
@@ -127,6 +147,9 @@
 		5B73946F145C5F3200C4F93D /* machine */ = {
 			isa = PBXGroup;
 			children = (
+				5BE3C04A14606C1700CACEE8 /* cpu.h */,
+				5BE3C04B14606C1700CACEE8 /* pic.h */,
+				5BE3C04C14606C1700CACEE8 /* plugbox.h */,
 				5B739470145C5F3200C4F93D /* cgascr.h */,
 				5B739471145C5F3200C4F93D /* io_port.h */,
 				5B739472145C5F3200C4F93D /* key.h */,
@@ -148,10 +171,19 @@
 		5B739478145C5F3200C4F93D /* user */ = {
 			isa = PBXGroup;
 			children = (
+				5BE3C04D14606C4700CACEE8 /* task2.h */,
 				5B739479145C5F3200C4F93D /* appl.h */,
 				5B73947A145C5F3200C4F93D /* task1.h */,
 			);
 			path = user;
+			sourceTree = "<group>";
+		};
+		5BE3C05114606D1A00CACEE8 /* guard */ = {
+			isa = PBXGroup;
+			children = (
+				5BE3C05214606D1A00CACEE8 /* gate.h */,
+			);
+			path = guard;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -164,6 +196,7 @@
 			buildPhases = (
 			);
 			buildToolPath = /usr/bin/make;
+			buildWorkingDirectory = "";
 			dependencies = (
 			);
 			name = oostubs;
@@ -273,6 +306,7 @@
 				5B32B999145F420B005A80DC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		5B73944C145C5E7E00C4F93D /* Build configuration list for PBXProject "oostubs" */ = {
 			isa = XCConfigurationList;

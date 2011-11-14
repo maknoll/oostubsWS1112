@@ -8,8 +8,26 @@
 
 /* INCLUDES */
 #include "machine/plugbox.h"
+#include "device/panic.h"
+#include "device/cgastr.h"
 
 /* GLOBALE VARIABLES */
+extern CGA_Stream kout;
 
 /* METHODEN */
+Plugbox::Plugbox () {
+    Panic panic;
+    
+    for (int i = 0; i < 256; i++) {
+        assign (i, panic);
+    }
+}
+
+void Plugbox::assign(unsigned short slot, Gate& gate) {
+    gates[slot] = &gate;
+}
+
+Gate& Plugbox::report(unsigned short slot) {
+    return *(gates[slot]);
+}
 

@@ -13,7 +13,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "5B739453145C5ECA00C4F93D"
+               BlueprintIdentifier = "5B32B996145F420B005A80DC"
                BuildableName = "oostubs"
                BlueprintName = "oostubs"
                ReferencedContainer = "container:oostubs.xcodeproj">
@@ -33,10 +33,20 @@
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.GDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.GDB"
       launchStyle = "0"
-      useCustomWorkingDirectory = "NO"
-      buildConfiguration = "Debug"
+      useCustomWorkingDirectory = "YES"
+      customWorkingDirectory = "/Users/martin/dev/oostubs"
+      buildConfiguration = "Release"
       debugDocumentVersioning = "YES"
       allowLocationSimulation = "YES">
+      <PathRunnable
+         FilePath = "/usr/local/Cellar/qemu/0.15.0/bin/qemu">
+      </PathRunnable>
+      <CommandLineArguments>
+         <CommandLineArgument
+            argument = "-kernel bin/maknoll"
+            isEnabled = "YES">
+         </CommandLineArgument>
+      </CommandLineArguments>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
