@@ -33,6 +33,7 @@ void Keyboard::trigger () {
             reboot();
         } else {
             unsigned short x,y;
+            kout.drop();
             kout.getpos(x,y);
             kout.setpos(39,10);
 			kout << "$ " << k.ascii();

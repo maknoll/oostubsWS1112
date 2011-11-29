@@ -12,23 +12,23 @@
 class CGA_Screen {
 	
 public:
-
-  CGA_Screen();
-
-  ~CGA_Screen();
-
-  void setpos(unsigned short x, unsigned short y);
-
-  void getpos(unsigned short& x, unsigned short& y) const;
-
-  void show(unsigned short x, unsigned short y, char c, unsigned char attrib);
-
-  void print(const char* string, unsigned int n, unsigned char attrib);
-
-  void scrollup();
-
-  void clear();
-
+    
+    CGA_Screen();
+    
+    ~CGA_Screen();
+    
+    void setpos(unsigned short x, unsigned short y);
+    
+    void getpos(unsigned short& x, unsigned short& y) const;
+    
+    void show(unsigned short x, unsigned short y, char c, unsigned char attrib);
+    
+    void print(const char* string, unsigned int n, unsigned char attrib);
+    
+    void scrollup();
+    
+    void clear();
+    
     typedef union {
         struct {
             char low;

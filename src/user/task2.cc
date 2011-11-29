@@ -43,7 +43,6 @@ void Task2::action(){
 		for(unsigned short j=0;j<39;j++)
 			kout << "-";
 		kout << endl;
-        int i;
-        for (i=1 ; i<200000 ; i++) ;
+        kout.flush();
 	}
 }

@@ -16,12 +16,13 @@
 #define INDEX_REGISTER 0x3d4
 #define DATA_REGISTER 0x3d5
 
-CGA_Screen::CGA_Screen() {}
+CGA_Screen::cursor_t position;
+
+CGA_Screen::CGA_Screen() {setpos(0,0);}
 CGA_Screen::~CGA_Screen() {}
 
 void CGA_Screen::setpos (unsigned short x, unsigned short y)
 {
-	cursor_t position;
     position.both = y*COLUMNS+x;
     
 	IO_Port(INDEX_REGISTER).outb(LOW_BYTE);
@@ -33,13 +34,6 @@ void CGA_Screen::setpos (unsigned short x, unsigned short y)
 
 void CGA_Screen::getpos(unsigned short& x, unsigned short& y) const
 {
-    cursor_t position;
-	IO_Port(INDEX_REGISTER).outb(LOW_BYTE);
-	position.low = IO_Port(DATA_REGISTER).inb();
-
-	IO_Port(INDEX_REGISTER).outb(HIGH_BYTE);
-	position.high = IO_Port(DATA_REGISTER).inb();
-
 	x = position.both % 80;
 	y = position.both / 80;
 }
@@ -93,4 +87,5 @@ void CGA_Screen::clear ()
 	char *cga = (char *) 0xb8000;
 	for (int i = 0; i < ROWS * COLUMNS * 2; i++)
 		cga[i] = 0;
+    setpos(0, 0);
 }

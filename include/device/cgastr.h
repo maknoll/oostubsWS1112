@@ -20,6 +20,8 @@ public:
 	~CGA_Stream ();
     
     virtual void flush();
+    
+    void drop();
 };
 
 #endif

@@ -28,10 +28,19 @@
       buildConfiguration = "Debug">
       <Testables>
       </Testables>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "5B32B996145F420B005A80DC"
+            BuildableName = "oostubs"
+            BlueprintName = "oostubs"
+            ReferencedContainer = "container:oostubs.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
    </TestAction>
    <LaunchAction
-      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.GDB"
-      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.GDB"
+      selectedDebuggerIdentifier = ""
+      selectedLauncherIdentifier = "Xcode.IDEFoundation.Launcher.PosixSpawn"
       launchStyle = "0"
       useCustomWorkingDirectory = "YES"
       customWorkingDirectory = "/Users/martin/dev/oostubs"
@@ -43,7 +52,7 @@
       </PathRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "-kernel bin/maknoll"
+            argument = "-kernel /Users/martin/dev/oostubs/bin/maknoll"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

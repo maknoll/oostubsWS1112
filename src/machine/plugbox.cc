@@ -14,9 +14,10 @@
 /* GLOBALE VARIABLES */
 extern CGA_Stream kout;
 
+Panic panic;
+
 /* METHODEN */
 Plugbox::Plugbox () {
-    Panic panic;
     
     for (int i = 0; i < 256; i++) {
         assign (i, panic);

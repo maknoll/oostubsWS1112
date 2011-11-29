@@ -19,3 +19,8 @@ void CGA_Stream::flush ()
     print (buffer, position, WHITE_ON_BLACK);
 	position = 0;
 }
+
+void CGA_Stream::drop()
+{
+    position = 0;
+}
