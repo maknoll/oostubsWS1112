@@ -15,19 +15,24 @@
 /** \brief Default interrupt handler
  *
  * This class is a subclass of Gate and implements a standard interrupt routine
- * used as default for unknown/registered interrupts.
+ * used as default for interrupts.
  */
 class Panic  : public Gate {
 public:
-    
-    /** \brief handle unknown/unregistered interrupt 
-     *
-     *  \todo write implementation
-     *
-     * For debug purposes the cpu will be halted if an unknown interrupt occurs.
-     **/
-    virtual void trigger();
-    
+  
+  /** handle unknown interrupt and halt system
+   *
+   * \todo write implementation
+   *
+   * \return always false, due to stopping of system
+   **/
+  virtual bool prologue ();
+
+   /** never called due to stopping of system
+	*
+	* \todo write implementation
+   **/
+  virtual void epilogue();
 };
 
 #endif

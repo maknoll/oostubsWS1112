@@ -15,7 +15,7 @@
 #include "machine/cpu.h"
 #include "machine/plugbox.h"
 #include "device/keyboard.h"
-#include "user/task2.h"
+#include "user/task3.h"
 
 /* GLOBAL OBJECTS */
 
@@ -36,7 +36,7 @@ extern "C" void kernel(uint32_t magic, const Multiboot_Info* addr);
  * This is the entry point of the operating system.  If this function returns
  * all interrupts will be disabled and the cpu will be halted.
  *
- * \todo uncomment Task2
+ * \todo uncomment Task3
  *
  * \param magic bootloader magic value
  * \param addr address of multiboot info structure
@@ -48,7 +48,7 @@ void kernel(uint32_t magic, const Multiboot_Info* addr){
     
     keyboard.plugin();
 
-    Task2 task;
+    Task3 task;
 
     task.action();
 

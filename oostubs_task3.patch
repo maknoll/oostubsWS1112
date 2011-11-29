@@ -1,0 +1,810 @@
+>From 772447e904b1033a2efdfb0effa39bd3acc6f7ff Mon Sep 17 00:00:00 2001
+From: Christoph Steup <christoph.steup@student.uni-magdeburg.de>
+Date: Wed, 17 Nov 2010 17:27:06 +0100
+Subject: [PATCH] Third task
+
+---
+ include/device/keyboard.h |   96 ++++++++++++++++++++-----------------
+ include/device/panic.h    |   71 +++++++++++++++-------------
+ include/guard/gate.h      |  116 +++++++++++++++++++++++++++++++++------------
+ include/guard/guard.h     |   61 +++++++++++++++++++++++
+ include/guard/locker.h    |   69 +++++++++++++++++++++++++++
+ include/guard/secure.h    |   42 ++++++++++++++++
+ include/object/chain.h    |   23 +++++++++
+ include/object/queue.h    |   59 +++++++++++++++++++++++
+ include/user/task3.h      |   27 ++++++++++
+ src/guard/guard.cc        |    9 ++++
+ src/main.cc               |    5 +-
+ src/object/queue.cc       |   54 +++++++++++++++++++++
+ src/user/task3.cc         |   51 ++++++++++++++++++++
+ 13 files changed, 574 insertions(+), 109 deletions(-)
+ create mode 100644 include/guard/guard.h
+ create mode 100644 include/guard/locker.h
+ create mode 100644 include/guard/secure.h
+ create mode 100644 include/object/chain.h
+ create mode 100644 include/object/queue.h
+ create mode 100644 include/user/task3.h
+ create mode 100644 src/guard/guard.cc
+ create mode 100644 src/object/queue.cc
+ create mode 100644 src/user/task3.cc
+
+diff --git a/include/device/keyboard.h b/include/device/keyboard.h
+index 58d5f76..0f8997f 100644
+--- a/include/device/keyboard.h
++++ b/include/device/keyboard.h
+@@ -1,43 +1,53 @@
+-/*---------------------------------------------------------------------------*
+- * Operating Systems I                                                       *
+- *---------------------------------------------------------------------------*
+- *                                                                           *
+- *                            K E Y B O A R D                                *
+- *                                                                           *
+- *---------------------------------------------------------------------------*/
+-
+-#ifndef __Keyboard_include__
+-#define __Keyboard_include__
+-
+-#include "machine/keyctrl.h"
+-#include "guard/gate.h"
+-#include "machine/key.h"
+- 
+-/** \brief %Keyboard driver with interrupt support
+- *
+- * This class is a subclass of Gate and implements the interrupt routine used 
+- * for the keyboard.
+- */
+-class Keyboard : public Keyboard_Controller, public Gate  {
+-   
+-public:
+-   
+-  /** \brief enable the interrupt mechanism of the keyboard
+-   *
+-   * \todo write implementation
+-   *
+-   * Method plugin() enables all keyboard interrupts. After calling plugin()
+-   * interrupts activated by the keyboard are recognised.
+-   */
+-  void plugin ();
+-
+-  /** \brief handle keyboard interrupt
+-   *
+-   *  \todo write implementation
+-   *
+-   * **/
+-  
+-  virtual void trigger ();
+-};
+-
+-#endif
++/*---------------------------------------------------------------------------*
++ * Operating Systems I                                                       *
++ *---------------------------------------------------------------------------*
++ *                                                                           *
++ *                            K E Y B O A R D                                *
++ *                                                                           *
++ *---------------------------------------------------------------------------*/
++
++#ifndef __Keyboard_include__
++#define __Keyboard_include__
++
++#include "machine/keyctrl.h"
++#include "guard/gate.h"
++ 
++/** \brief %Keyboard driver with interrupt support
++ *
++ * This class is a subclass of Gate and implements the interrupt routine used 
++ * for the keyboard.
++ */
++class Keyboard : public Keyboard_Controller, public Gate  {
++private:
++	/** \brief storage for fetched keys
++	 *
++	 * \todo write declaration
++	 **/
++   
++public:
++   
++  /** \brief enable the interrupt mechanism of the keyboard
++   *
++   * \todo write implementation
++   *
++   * Method plugin() enables all keyboard interrupts. After calling plugin()
++   * interrupts activated by the keyboard are recognised.
++   **/
++  void plugin ();
++
++  /** \brief fetch the key from the controller
++   *
++   * \todo write implementation
++   *
++   * \return true if epilogue must be executed afterwards, false otherwise
++   **/
++  virtual bool prologue ();
++
++   /** \brief print the fetched key to the screen
++   *
++   * \todo write implementation
++   **/
++  virtual void epilogue();        
++};
++
++#endif
+diff --git a/include/device/panic.h b/include/device/panic.h
+index 7455fe5..1f1c3ba 100644
+--- a/include/device/panic.h
++++ b/include/device/panic.h
+@@ -1,33 +1,38 @@
+-/*---------------------------------------------------------------------------*
+- * Operating Systems I                                                       *
+- *---------------------------------------------------------------------------*
+- *                                                                           *
+- *                                 P A N I C                                 *
+- *                                                                           *
+- *---------------------------------------------------------------------------*/
+-
+-#ifndef __panic_include__
+-#define __panic_include__
+-
+-/* INCLUDES */
+-#include "guard/gate.h"
+-
+-/** \brief Default interrupt handler
+- *
+- * This class is a subclass of Gate and implements a standard interrupt routine
+- * used as default for unknown/registered interrupts.
+- */
+-class Panic  : public Gate {
+-public:
+-  
+-  /** \brief handle unknown/unregistered interrupt 
+-   *
+-   *  \todo write implementation
+-   *
+-   * For debug purposes the cpu will be halted if an unknown interrupt occurs.
+-   **/
+-  virtual void trigger();
+-
+-};
+-
+-#endif
++/*---------------------------------------------------------------------------*
++ * Operating Systems I                                                       *
++ *---------------------------------------------------------------------------*
++ *                                                                           *
++ *                                 P A N I C                                 *
++ *                                                                           *
++ *---------------------------------------------------------------------------*/
++
++#ifndef __panic_include__
++#define __panic_include__
++
++/* INCLUDES */
++#include "guard/gate.h"
++
++/** \brief Default interrupt handler
++ *
++ * This class is a subclass of Gate and implements a standard interrupt routine
++ * used as default for interrupts.
++ */
++class Panic  : public Gate {
++public:
++  
++  /** handle unknown interrupt and halt system
++   *
++   * \todo write implementation
++   *
++   * \return always false, due to stopping of system
++   **/
++  virtual bool prologue ();
++
++   /** never called due to stopping of system
++	*
++	* \todo write implementation
++   **/
++  virtual void epilogue();
++};
++
++#endif
+diff --git a/include/guard/gate.h b/include/guard/gate.h
+index ff622dc..5a1ad0e 100644
+--- a/include/guard/gate.h
++++ b/include/guard/gate.h
+@@ -1,31 +1,85 @@
+-/*---------------------------------------------------------------------------*
+- * Operating Systems I                                                       *
+- *---------------------------------------------------------------------------*
+- *                                                                           *
+- *                                  G A T E                                  *
+- *                                                                           *
+- *---------------------------------------------------------------------------*/
+-
+-#ifndef __Gate_include__
+-#define __Gate_include__
+-
+-/** \brief Interrupt handling base class
+- *
+- * Superclass of a set of classes that are able to handle interrupts. Every
+- * subclass of Gate has to implement method trigger() with appropriated
+- * behavior.
+- **/
+-class Gate {
+-  
+-public:
+-  /** \brief interrupt handling method
+-   *
+-   * This method is called after an interrupt occured. It is executed 
+-   * asynchronous to other activities of the operation system. To enable 
+-   * different behavior according to the occured interrupt this method has to 
+-   * be implemented in a subclasses of Gate.
+-   **/
+-	virtual void trigger() = 0;
+-};
+-
+-#endif
++/*---------------------------------------------------------------------------*
++ * Operating Systems I                                                       *
++ *---------------------------------------------------------------------------*
++ *                                                                           *
++ *                                  G A T E                                  *
++ *                                                                           *
++ *---------------------------------------------------------------------------*/
++
++#ifndef __Gate_include__
++#define __Gate_include__
++
++#include "object/chain.h"
++
++/** \brief Interrupt handling base class
++ *
++ * Class Gate is the superclass of a set of classes that are able to handle 
++ * interrupts. Every subclass of Gate has to implement method trigger() that 
++ * implements the appropriated behavior of the handler.
++ */
++
++class Gate : public Chain  {
++private:
++	/** \brief current queue state
++	 *
++	 * \todo write declaration
++	 * **/
++
++public:
++  /**\brief Default Constructor
++   *
++   * \todo write implementation
++   *
++   * Sets this gate to be unqueued
++   **/
++  Gate(){
++  
++  }
++
++  /** \brief Destructor
++   *
++   * does nothing
++   **/
++  virtual ~Gate(){
++  }
++
++  /** \brief Immediate part of interrupt handling
++   *
++   * To enalbe different behavior according to the occured interrupt this
++   * method has to be implemented in subclasses of Gate.
++   *
++   * @return TRUE if method epilogue() has to be executed afterwards.
++   */
++   virtual bool prologue() = 0;
++
++  /**\brief schedulable part of interrupt handling
++   * 
++   * Just as method prologue() it 
++   * has to be implemented in the subclasses of Gate.
++   *
++   **/
++   virtual void epilogue() = 0;
++
++   /** \brief set queuing status
++	*
++	* \todo write implementation
++	*
++	* \param q new queuing state
++	**/
++   void queued(bool q){
++
++   }
++
++   /** \brief get queuing status
++	*
++	* \todo write implementation
++	*
++	* \return true if queued, false otherwise
++	**/
++   bool queued() const{
++	   return false;
++   }
++};
++
++#endif
++>>>>>>> 9f4cccc... Third task of OOStuBs:
+diff --git a/include/guard/guard.h b/include/guard/guard.h
+new file mode 100644
+index 0000000..c4a88f6
+--- /dev/null
++++ b/include/guard/guard.h
+@@ -0,0 +1,61 @@
++/*---------------------------------------------------------------------------*
++ * Operating Systems I                                                       *
++ *---------------------------------------------------------------------------*
++ *                                                                           *
++ *                                G U A R D                                  *
++ *                                                                           *
++ *---------------------------------------------------------------------------*/
++
++#ifndef __Guard_include__
++#define __Guard_include__
++
++#include "guard/locker.h"
++#include "guard/gate.h"
++
++/** \brief Interrupt synchronisation handler
++ *
++ * Guard enables the operating system to synchroniste actions of interrupt 
++ * handlers for critical sections that are secured using the lock of the 
++ * Guard object.
++ */
++class Guard : public Locker {
++  /** \brief queue of waiting epilogues 
++   *
++   * \todo write declaration
++   **/
++
++  /** \brief remove a queued epilogue from the queue
++   *
++   * This method has to be called secured to ensure that the structure of the
++   * queue stays consistent.
++   *
++   * \todo write implementation
++   *
++   * @return a pointer to the Gate object implementing the next epilogue, or
++   * NULL if queue is empty.
++   */
++	Gate* remove_epilogue();
++
++public:
++  /** \brief leave the critical section
++   *
++   * Waiting epilogues can be processed now.
++   *
++   * \todo write implementation
++   **/ 
++	void leave();
++
++  /** \brief try to execute epilogue
++   *
++   * If possible the epilogue is processed right away but if the critical
++   * section used for the epilogue is locke the epilogue has to be queued for
++   * later processing.
++   *
++   * \todo write implementation
++   *
++   * @param item pointer to the Gate object implementing the epilogue.
++   **/
++	void relay(Gate* item);
++};
++
++#endif
+diff --git a/include/guard/locker.h b/include/guard/locker.h
+new file mode 100644
+index 0000000..aa153aa
+--- /dev/null
++++ b/include/guard/locker.h
+@@ -0,0 +1,69 @@
++/*---------------------------------------------------------------------------*
++ * Operating Systems I                                                       *
++ *---------------------------------------------------------------------------*
++ *                                                                           *
++ *                               L O C K E R                                 *
++ *                                                                           *
++ *---------------------------------------------------------------------------*/
++
++#ifndef __Locker_include__
++#define __Locker_include__
++
++/** \brief Atomic locking variable
++ *
++ * Class Locker imlements a locking variable used to secure critical sections of
++ * the operating system. It is important to notice that the locking variable 
++ * used, only shows if a critical section is occupied or free. Waiting for the
++ * locking variable and securing the variable has to implemented otherwise.
++ */
++class Locker {
++protected:
++  /** atomar locking variable
++   *
++   * \todo write declaration
++   **/
++
++public:
++  /** \brief Default constructor 
++   *
++   * Initialises the locking variable (free). 
++   *
++   * \todo write implementation
++   **/
++  Locker(){
++
++  }
++
++  /** \brief enter a critical section
++   *
++   * Locks the variable.
++   *
++   * \todo write implementation
++   **/
++  void enter(){
++
++  }
++
++  /** \brief return from a critical section
++   *
++   * Releases locking variable.
++   *
++   * \todo write implementation
++   **/
++  void retne(){
++
++  }
++
++  /** \brief test for critical section
++   *
++   * \todo write implementation
++   *
++   * @return the value of the locking variable indicating if the critical 
++   *         section is occupied or free.
++   */
++  bool avail(){
++	return true;
++  }
++};
++
++#endif
+diff --git a/include/guard/secure.h b/include/guard/secure.h
+new file mode 100644
+index 0000000..e65ce21
+--- /dev/null
++++ b/include/guard/secure.h
+@@ -0,0 +1,42 @@
++/*---------------------------------------------------------------------------*
++ * Operating Systems I                                                       *
++ *---------------------------------------------------------------------------*
++ *                                                                           *
++ *                               S E C U R E                                 *
++ *                                                                           *
++ *---------------------------------------------------------------------------*/
++
++#ifndef __Secure_include__
++#define __Secure_include__
++
++/** \brief RAII implemented critical section
++ *
++ * Class Secure is used as a simple interface to set and release the 
++ * lockvariable we used for securing critical sections of the operating system. 
++ * The constructor locks and the destructor releases the variable, so simply 
++ * declaring the object is enough to secure the scope of the object.
++ */
++class Secure {
++public:
++  /** \brief Default constructor enters critical section
++   *
++   * Sets the lock through method guard.enter().
++   *
++   * \todo write implementation
++   **/
++  Secure(){
++
++  }
++
++  /** \brief Default destructor leaving critical section
++   * 
++   * Unsets the lock through method guard.leave().
++   *
++   * \todo write implementation
++   **/
++  ~Secure(){
++
++  }
++};
++
++#endif
+diff --git a/include/object/chain.h b/include/object/chain.h
+new file mode 100644
+index 0000000..b5c104c
+--- /dev/null
++++ b/include/object/chain.h
+@@ -0,0 +1,23 @@
++/*---------------------------------------------------------------------------*
++ * Operating Systems I                                                       *
++ *---------------------------------------------------------------------------*
++ *                                                                           *
++ *                              C H A I N                                    *
++ *                                                                           *
++ *---------------------------------------------------------------------------*/
++
++#ifndef __chain_include__
++#define __chain_include__
++
++/** \brief Single linked list element
++ *
++ * Chain implements the pointer enableing us to insert an object into a simple 
++ * linked list.
++ */
++class Chain {
++public:
++  /** \brief pointer to next element in the queue **/
++  Chain* next;
++};
++
++#endif
+diff --git a/include/object/queue.h b/include/object/queue.h
+new file mode 100644
+index 0000000..9779023
+--- /dev/null
++++ b/include/object/queue.h
+@@ -0,0 +1,59 @@
++/*---------------------------------------------------------------------------*
++ * Operating Systems I                                                       *
++ *---------------------------------------------------------------------------*
++ *                                                                           *
++ *                              Q U E U E                                    *
++ *                                                                           *
++ *---------------------------------------------------------------------------*/
++
++#ifndef __queue_include__
++#define __queue_include__
++
++#include "object/chain.h"
++
++/** \brief Simple linked list of %Chain objects.
++ * 
++ * Unlike other implementations of linked lists tail is not pointing to the last
++ * item of the list but to the next pointer of the last item or as long as the
++ * list is empty to the head of the list. This saves the verification for 
++ * existing items if an item is queued. If however an item is removed this 
++ * verification has to be done.
++ */
++class Queue {
++protected:
++  /** \brief pointer to first element of the queue **/
++  Chain* head;
++
++  /** \brief pointer to the pointer of the last list element
++   *
++   *  if the list is empty this points to head
++   **/
++  Chain** tail;
++
++public:
++  /** Default constructor
++    *
++	* Intializes tghe queue to be empty, sets head to NULL and tail to point to head
++   **/
++  Queue () { head = 0; tail = &head; }
++
++  /** \brief insert item to the end of the list
++   *
++   * \param item pointer to chain element to be inserted
++   **/
++  void enqueue (Chain* item);
++
++  /** \brief remove item from the front of the list
++   *
++   * \return pointer to the removed element, or NULL if empty
++   **/
++  Chain* dequeue ();
++
++  /** \brief remove an item from the list
++   *
++   * \param item pointer to the item, that should be removed
++   **/
++  void remove (Chain* item);
++};
++
++#endif
+diff --git a/include/user/task3.h b/include/user/task3.h
+new file mode 100644
+index 0000000..d077db9
+--- /dev/null
++++ b/include/user/task3.h
+@@ -0,0 +1,27 @@
++#include "user/appl.h"
++
++/** \brief Third test application
++ *
++ * This application test the functionality of the implemented interrupt
++ * synchronization system.  It prints the task identification and then
++ * repeatedly draws a line in a secured section.  Interrupts from the keyboard
++ * are printed onto the screen to a fixed location. This should not disturb the
++ * drawing of the line anymore.
++ **/
++class Task3 : public Application{
++	public:
++		/** \brief Default constructor
++		 *
++		 * prints task information and enables interrupts
++		 **/
++		Task3();
++
++		/** \brief Destructor
++		 *
++		 * disables interrupts, should never be called due to the endless loop
++		 **/
++		virtual ~Task3();
++
++		/** \brief prints the line **/
++		virtual void action();
++};
+diff --git a/src/guard/guard.cc b/src/guard/guard.cc
+new file mode 100644
+index 0000000..f855684
+--- /dev/null
++++ b/src/guard/guard.cc
+@@ -0,0 +1,9 @@
++/*---------------------------------------------------------------------------*
++ * Operating Systems I                                                       *
++ *---------------------------------------------------------------------------*
++ *                                                                           *
++ *                                G U A R D                                  *
++ *                                                                           *
++ *---------------------------------------------------------------------------*/
++
++#include "guard/guard.h"
+diff --git a/src/main.cc b/src/main.cc
+index b687439..f9d4c18 100644
+--- a/src/main.cc
++++ b/src/main.cc
+@@ -9,6 +9,7 @@
+ /* INCLUDES */
+ 
+ #include "machine/multiboot.h"
++//#include "user/task3.h"
+ 
+ /* GLOBAL OBJECTS */
+ 
+@@ -23,7 +24,7 @@ extern "C" void kernel(uint32_t magic, const Multiboot_Info* addr);
+  * This is the entry point of the operating system.  If this function returns
+  * all interrupts will be disabled and the cpu will be halted.
+  *
+- * \todo uncomment Task2
++ * \todo uncomment Task3
+  *
+  * \param magic bootloader magic value
+  * \param addr address of multiboot info structure
+@@ -31,7 +32,7 @@ extern "C" void kernel(uint32_t magic, const Multiboot_Info* addr);
+ 
+ void kernel(uint32_t magic, const Multiboot_Info* addr){
+ 
+-//Task2 task;
++//Task3 task;
+ 
+ //task.action();
+ 
+diff --git a/src/object/queue.cc b/src/object/queue.cc
+new file mode 100644
+index 0000000..ef16460
+--- /dev/null
++++ b/src/object/queue.cc
+@@ -0,0 +1,54 @@
++/*---------------------------------------------------------------------------*
++ * Operating Systems I                                                       *
++ *---------------------------------------------------------------------------*
++ *                                                                           *
++ *                              Q U E U E                                    *
++ *                                                                           *
++ *---------------------------------------------------------------------------*/
++
++#include "object/queue.h"
++
++void Queue::enqueue (Chain* item) { 
++  item->next = 0;         // new item has no following item
++  *tail = item;           // insert the element at the end of the list
++  tail = &(item->next);   // and set new tail-pointer
++}
++
++Chain* Queue::dequeue () {
++  Chain* item;
++
++  item = head;            // head points to the first item of the list
++  if (item) {             // head ist NULL if list is empty
++    head = item->next;    // Das erste Element aus der Liste ausklinken.
++    if (!head)            // if list is now empty tail has to point to head
++      tail = &head;
++    else                  // otherwise delete entry for following item
++    	item->next = 0;
++  }
++  return item;
++}
++
++void Queue::remove (Chain* item) {
++  Chain* cur;
++
++  if (head) {
++    cur = head;            // start search at the head of the linked list
++    if (item == cur)       // if first element is what we are looking for
++      dequeue ();          // dequeue is enough
++    else {
++      // go through linked list one item at a time until end of list is reachted
++      // or next item is the item we look for
++      while (cur->next && item != cur->next) {
++        cur = cur->next;
++      }
++
++      if (cur->next) {
++        cur->next = item->next;   // delete item from list
++        item->next = 0;           // delete entry for following item
++
++        if (!cur->next)           // if cur has no following item tail has to be
++          tail = &(cur->next);    // updated.
++      }
++    }
++  }
++}
+diff --git a/src/user/task3.cc b/src/user/task3.cc
+new file mode 100644
+index 0000000..ff8293b
+--- /dev/null
++++ b/src/user/task3.cc
+@@ -0,0 +1,51 @@
++#include "user/task3.h"
++#include "device/cgastr.h"
++#include "machine/cpu.h"
++#include "guard/secure.h"
++
++extern CGA_Stream kout;
++extern CPU cpu;
++
++Task3::Task3(){
++	kout.setpos(31,1);
++	kout << "OOStuBs - Task 3" << endl << endl;
++
++	cpu.enable_int();
++}
++
++Task3::~Task3(){
++
++	cpu.disable_int();
++}
++
++void Task3::action(){
++	unsigned short x,y;
++	unsigned char i=0;
++
++	{
++		Secure s;
++		kout.getpos(x,y);
++	}
++	while(1)
++	{
++		Secure s;
++		kout.setpos(x,y);
++		for(unsigned short j=0;j<39;j++)
++			kout << "-";
++			kout.flush();
++		switch(i++%4)
++		{
++			case(0): kout << "//";
++					 break;
++			case(1): kout << "--";
++					 break;
++			case(2): kout << "\\\\";
++					 break;
++			case(3): kout << "||";
++					 break;
++		}
++		for(unsigned short j=0;j<39;j++)
++			kout << "-";
++		kout << endl;
++	}
++}
+-- 
+1.7.2.2
+
