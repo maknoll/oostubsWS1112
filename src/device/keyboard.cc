@@ -6,39 +6,48 @@
  *                                                                           *
  *---------------------------------------------------------------------------*/
 
-/* INCLUDES */
 #include "device/keyboard.h"
 #include "machine/io_port.h"
 #include "device/cgastr.h"
 #include "machine/pic.h"
 #include "machine/plugbox.h"
 
-/* GLOBAL VARIABLS */
 extern CGA_Stream kout;
 extern PIC pic;
 extern Plugbox plugbox;
 
-/* METHODS */
 void Keyboard::plugin () {
+    length = 0;
     
     plugbox.assign(Plugbox::keyboard, *this);
 	pic.allow(PIC::keyboard);
 }
 
-void Keyboard::trigger () {
+bool Keyboard::prologue () {
     Key k = key_hit();
     
-    if (k.valid()) {
+    if(k.valid()){
         if (k.alt() && k.ctrl() && k.scancode()==83) {
             reboot();
         } else {
-            unsigned short x,y;
-            kout.drop();
-            kout.getpos(x,y);
-            kout.setpos(39,10);
-			kout << "$ " << k.ascii();
-			kout.flush();
-            kout.setpos(x,y);
+            if (length != 1023) {
+                key_buffer[length++] = k;
+            }
         }
 	}
+	
+	return k.valid();
+}
+
+void Keyboard::epilogue() {
+    
+    unsigned short x,y;
+//    kout.drop();
+    kout.getpos(x,y);
+    kout.setpos(39,10);
+    kout << "$ ";
+    while (length > 0)
+        kout << key_buffer[--length].ascii();
+    kout.flush();
+    kout.setpos(x,y);
 }

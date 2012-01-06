@@ -7,6 +7,15 @@
 	objects = {
 
 /* Begin PBXFileReference section */
+		5B0F83FF14852DA7009507D5 /* guard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = guard.h; sourceTree = "<group>"; };
+		5B0F840114852DB1009507D5 /* locker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = locker.h; sourceTree = "<group>"; };
+		5B0F840214852DB1009507D5 /* secure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = secure.h; sourceTree = "<group>"; };
+		5B0F840314852DCF009507D5 /* chain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = chain.h; sourceTree = "<group>"; };
+		5B0F840414852DCF009507D5 /* queue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = queue.h; sourceTree = "<group>"; };
+		5B0F840514852DDF009507D5 /* task3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = task3.h; sourceTree = "<group>"; };
+		5B0F840614852DFF009507D5 /* guard.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = guard.cc; sourceTree = "<group>"; };
+		5B0F840714852E12009507D5 /* queue.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = queue.cc; sourceTree = "<group>"; };
+		5B0F840814852E20009507D5 /* task3.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = task3.cc; sourceTree = "<group>"; };
 		5B73945A145C5F2700C4F93D /* boot.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = boot.S; sourceTree = "<group>"; };
 		5B73945B145C5F2700C4F93D /* compat.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = compat.S; sourceTree = "<group>"; };
 		5B73945D145C5F2700C4F93D /* cgastr.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cgastr.cc; sourceTree = "<group>"; };
@@ -87,6 +96,7 @@
 		5B73945E145C5F2700C4F93D /* guard */ = {
 			isa = PBXGroup;
 			children = (
+				5B0F840614852DFF009507D5 /* guard.cc */,
 				5B73945F145C5F2700C4F93D /* guardian.cc */,
 			);
 			path = guard;
@@ -106,6 +116,7 @@
 		5B739465145C5F2700C4F93D /* object */ = {
 			isa = PBXGroup;
 			children = (
+				5B0F840714852E12009507D5 /* queue.cc */,
 				5B739466145C5F2700C4F93D /* o_stream.cc */,
 				5B739467145C5F2700C4F93D /* strbuf.cc */,
 			);
@@ -115,6 +126,7 @@
 		5B739468145C5F2700C4F93D /* user */ = {
 			isa = PBXGroup;
 			children = (
+				5B0F840814852E20009507D5 /* task3.cc */,
 				5BE3C05014606C9700CACEE8 /* task2.cc */,
 				5B73946A145C5F2700C4F93D /* task1.cc */,
 			);
@@ -162,6 +174,8 @@
 		5B739475145C5F3200C4F93D /* object */ = {
 			isa = PBXGroup;
 			children = (
+				5B0F840314852DCF009507D5 /* chain.h */,
+				5B0F840414852DCF009507D5 /* queue.h */,
 				5B739476145C5F3200C4F93D /* o_stream.h */,
 				5B739477145C5F3200C4F93D /* strbuf.h */,
 			);
@@ -171,6 +185,7 @@
 		5B739478145C5F3200C4F93D /* user */ = {
 			isa = PBXGroup;
 			children = (
+				5B0F840514852DDF009507D5 /* task3.h */,
 				5BE3C04D14606C4700CACEE8 /* task2.h */,
 				5B739479145C5F3200C4F93D /* appl.h */,
 				5B73947A145C5F3200C4F93D /* task1.h */,
@@ -181,6 +196,9 @@
 		5BE3C05114606D1A00CACEE8 /* guard */ = {
 			isa = PBXGroup;
 			children = (
+				5B0F840114852DB1009507D5 /* locker.h */,
+				5B0F840214852DB1009507D5 /* secure.h */,
+				5B0F83FF14852DA7009507D5 /* guard.h */,
 				5BE3C05214606D1A00CACEE8 /* gate.h */,
 			);
 			path = guard;

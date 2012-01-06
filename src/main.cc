@@ -15,6 +15,7 @@
 #include "machine/cpu.h"
 #include "machine/plugbox.h"
 #include "device/keyboard.h"
+#include "guard/guard.h"
 #include "user/task3.h"
 
 /* GLOBAL OBJECTS */
@@ -26,6 +27,7 @@ PIC pic;
 CPU cpu;
 Plugbox plugbox;
 Keyboard keyboard;
+Guard guard;
 
 /* METHODS  */
 

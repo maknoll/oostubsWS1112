@@ -7,6 +7,7 @@ extern CGA_Stream kout;
 extern CPU cpu;
 
 Task3::Task3(){
+    kout.clear();
 	kout.setpos(31,1);
 	kout << "OOStuBs - Task 3" << endl << endl;
 

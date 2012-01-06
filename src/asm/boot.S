@@ -51,6 +51,7 @@ gdtSetup:					/* Initialize the GDT */
 	 mov	%cx, %es
 	 mov	%cx, %gs
 	 mov	%cx, %fs
+     ljmpl  $0x08, $stackSetup
 
 stackSetup:					/*Creating a stack*/
 	 mov	$(stack + BOOT_STACK_SIZE), %esp
