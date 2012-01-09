@@ -1,0 +1,885 @@
+>From 832c6a677a218f36a1cfcd4704c03b794ae5fc1d Mon Sep 17 00:00:00 2001
+From: Christoph Steup <christoph.steup@student.uni-magdeburg.de>
+Date: Mon, 6 Dec 2010 15:22:05 +0100
+Subject: [PATCH] Task4 of OOStuBs
+
+---
+ Makefile                   |    2 +-
+ include/machine/toc.h      |  102 +++++++++++++++++++++++++++++++++
+ include/thread/coroutine.h |   67 ++++++++++++++++++++++
+ include/thread/dispatch.h  |   64 +++++++++++++++++++++
+ include/thread/entrant.h   |   30 ++++++++++
+ include/thread/kickoff.h   |   19 ++++++
+ include/thread/scheduler.h |   67 ++++++++++++++++++++++
+ include/user/appl.h        |   13 +++-
+ include/user/task4.h       |  133 ++++++++++++++++++++++++++++++++++++++++++++
+ misc/rules.mk              |   13 ++++-
+ src/asm/tocAsm.S           |   11 ++++
+ src/machine/toc.c          |    9 +++
+ src/main.cc                |    9 ++-
+ src/thread/coroutine.cc    |   19 ++++++
+ src/thread/dispatch.cc     |    9 +++
+ src/thread/kickoff.cc      |    1 +
+ src/thread/scheduler.cc    |    9 +++
+ src/user/task4.cc          |   99 ++++++++++++++++++++++++++++++++
+ 18 files changed, 666 insertions(+), 10 deletions(-)
+ create mode 100644 include/machine/toc.h
+ create mode 100644 include/thread/coroutine.h
+ create mode 100644 include/thread/dispatch.h
+ create mode 100644 include/thread/entrant.h
+ create mode 100644 include/thread/kickoff.h
+ create mode 100644 include/thread/scheduler.h
+ create mode 100644 include/user/task4.h
+ create mode 100644 src/asm/tocAsm.S
+ create mode 100644 src/machine/toc.c
+ create mode 100644 src/thread/coroutine.cc
+ create mode 100644 src/thread/dispatch.cc
+ create mode 100644 src/thread/kickoff.cc
+ create mode 100644 src/thread/scheduler.cc
+ create mode 100644 src/user/task4.cc
+
+diff --git a/Makefile b/Makefile
+index 11bff1e..8688afe 100644
+--- a/Makefile
++++ b/Makefile
+@@ -9,7 +9,7 @@ CXXFLAGS=
+ LDFLAGS=-O0
+ ASMFLAGS=-g
+ 
+-OBJECT_IGNORE= task1.o task2.o task3.o
++OBJECT_IGNORE= task1.o task2.o task3.o task4.o
+ 
+ INCPATHS=
+ LDPATHS=
+diff --git a/include/machine/toc.h b/include/machine/toc.h
+new file mode 100644
+index 0000000..b547551
+--- /dev/null
++++ b/include/machine/toc.h
+@@ -0,0 +1,102 @@
++/*---------------------------------------------------------------------------*
++ * Operating Systems I                                                       *
++ *---------------------------------------------------------------------------*
++ *                                                                           *
++ *                                 T O C                                     *
++ *                                                                           *
++ *---------------------------------------------------------------------------*/
++
++#ifndef __toc_include__
++#define __toc_include__
++
++/* To access elements of the toc structure using an assembler method, the
++ * offsets of the elements are needed. To ease programming the offsets are hard
++ * coded here and can be used within assembler code.
++ */
++
++#define EBX_OFFSET 0
++#define ESI_OFFSET 4
++#define EDI_OFFSET 8
++#define EBP_OFFSET 12
++#define ESP_OFFSET 16
++
++/* Don't include in assembler files */
++#ifndef ASM
++
++/** \brief Thread of control register structure
++ *
++ * The structure %toc or better 'thread of control' is used to save the values
++ * of the non-volatile registers if a context switch occurs. EAX, ECX and EDX
++ * are volatile registers if the GNU C compiler is used. Their values are not
++ * guaranteed to remain the same after a function call and can therefore be
++ * changed without saving and restoring them.
++ **/ 
++  struct toc {
++	  /** \brief copy of ebx content **/
++	  void *ebx;
++	  
++	  /** \brief copy of esi content **/
++	  void *esi;
++
++	  /** \brief copy of edi content **/
++	  void *edi;
++	  
++	  /** \brief copy of ebp content **/
++	  void *ebp;
++
++	  /** \brief copy of esp content **/
++	  void *esp;
++ };
++
++#ifdef __cplusplus
++extern "C"{
++#endif /* C++ */
++
++/**\brief initialise toc and stack of newly created thread
++ *
++ * To do this it creates the stack in a way, that after
++ * setting the esp to the current top of stack of this coroutine, the saved
++ * instruction pointer points to the supplied kickoff function.
++ * Also the actual toc saved esp points to the supplied top of stack
++ *
++ * \todo write implementation
++ *
++ * \param regs pointer to the structur toc of the thread
++ * \param tos pointer to the top of stack of the thread
++ * \param kickoff pointer to method kickoff()
++ * \param object pointer to the thread that will be initialiesed
++ */
++void toc_settle (struct toc* regs, void* tos, void (*kickoff)(void*), void* object);
++
++/** \brief start first thread
++ *
++ * This function is used to start the first thread/coroutine in the system, it is
++ * similar to toc_switch, but it does not need to save the current registers.
++ *
++ * \todo write implementation
++ *
++ * \param regs the toc of the first thread
++ **/
++void toc_go(struct toc* regs) __attribute__((noinline));
++
++/** \brief switch to next thread
++ *
++ * This function switches threads/coroutines by switching the current register
++ * content of the cpu with the content of the saved registers of the next
++ * thread, also the current cpu registers must be saved to the toc structure of
++ * the current thread/coroutine
++ *
++ * \todo write implementation
++ *
++ * \param next the toc of the next thread
++ * \param current storage to save current toc into
++ **/
++void toc_switch(struct toc* current, struct toc* next) __attribute__((noinline));
++
++#ifdef __cplusplus
++}
++#endif /* C++ */
++
++#endif /* Assembler */
++
++#endif /* GUARD */
+diff --git a/include/thread/coroutine.h b/include/thread/coroutine.h
+new file mode 100644
+index 0000000..4dbf56e
+--- /dev/null
++++ b/include/thread/coroutine.h
+@@ -0,0 +1,67 @@
++/*---------------------------------------------------------------------------*
++ * Operating Systems I                                                       *
++ *---------------------------------------------------------------------------*
++ *                                                                           *
++ *                          C O R O U T I N E                                *
++ *                                                                           *
++ *---------------------------------------------------------------------------*/
++ 
++#ifndef __Coroutine_include__
++#define __Coroutine_include__
++
++#include "machine/toc.h"
++
++/** \brief Implementation of a context switch concept using coroutines.
++ *
++ * Every coroutine uses its own stack and every coroutine contains 
++ * the structure toc (thread of control) to save the non-volatile registers 
++ * before a context switch.
++ * The first coroutine is initially activated useing the method go(). Afterwards
++ * every context switch is triggered using resume().
++ **/
++class Coroutine {
++private:
++  /** \brief saved register content storage 
++   *
++   *  \todo write declaration
++   * **/
++
++public:
++  /** \brief Default constructor
++   * 
++   * Initialises the stack, as well as the structure toc containing the 
++   * non-volatile registers of this coroutine of the coroutine, using the 
++   * external method 'toc_settle()' 
++   * 
++   * @param tos pointer to the stack used by this coroutine
++   */
++  Coroutine(void* tos);
++
++  /** \brief triggers a context switch
++   *
++   * This method delegates to the scheduler
++   *
++   * \todo write implementation
++   **/
++  void resume();
++
++  /** \brief exit this coroutine
++   *
++   * This method delegates to the scheduler
++   *
++   * \todo write implementation
++   **/
++  void exit();
++
++  /** \brief real function of the coroutine,
++   *
++   * since every coroutine does something differenct this method has to be
++   * implemented by a subclass of Coroutine (e.g. Application).
++   **/
++  virtual void action() = 0;
++
++  /* friend declaration so that, Dispatcher can access the register content storage */
++  friend class Dispatcher;
++};
++
++#endif
+diff --git a/include/thread/dispatch.h b/include/thread/dispatch.h
+new file mode 100644
+index 0000000..3275ad9
+--- /dev/null
++++ b/include/thread/dispatch.h
+@@ -0,0 +1,64 @@
++/*---------------------------------------------------------------------------*
++ * Operating Systems I                                                       *
++ *---------------------------------------------------------------------------*
++ *                                                                           *
++ *                          D I S P A T C H E R                              *
++ *                                                                           *
++ *---------------------------------------------------------------------------*/
++
++#ifndef __dispatch_include__
++#define __dispatch_include__
++
++#include "thread/entrant.h"
++
++/** \brief Thread/Coroutine of control switch instance.
++ *
++ * Starts and switches between threads/coroutines.
++ */
++class Dispatcher {
++private:
++  /** \brief Pointer to the currently active coroutine 
++   *
++   * \todo write declaration
++   * **/
++
++public:
++  /** \brief Default constructor.
++   *
++   * \todo write implementation
++   *
++   *  Initializes current thread/coroutine to be invalid, since system is not
++   *  yet started.
++   **/
++  Dispatcher();
++
++  /** \brief starts the execution of the first coroutine of the 
++   * operating system.
++   *
++   * \todo write implementation
++   *
++   * @param first reference of the coroutine that will be executed first.
++   */
++  void go(Entrant& first);
++
++  /** \brief  switche the thread of control to the specified 
++   * coroutine. 
++   *
++   * This method can be called by a coroutine or through the scheduler.
++   *
++   * \todo write implementation
++   *
++   * @param next reference of the coroutine that will be executed next.
++   */
++  void dispatch(Entrant& next);
++
++  /** \brief returns the currently active coroutine.
++   *
++   * \todo write implementation
++   * 
++   * @return pointer for the currently active coroutine.
++   */
++  Entrant* active() const;
++};
++
++#endif
+diff --git a/include/thread/entrant.h b/include/thread/entrant.h
+new file mode 100644
+index 0000000..5226e2c
+--- /dev/null
++++ b/include/thread/entrant.h
+@@ -0,0 +1,30 @@
++/*---------------------------------------------------------------------------*
++ * Operating Systems I                                                       *
++ *---------------------------------------------------------------------------*
++ *                                                                           *
++ *                            E N T R A N T                                  *
++ *                                                                           *
++ *---------------------------------------------------------------------------*/
++
++#ifndef __entrant_include__
++#define __entrant_include__
++
++#include "thread/coroutine.h"
++#include "object/chain.h"
++
++/** \brief Schedulable %Coroutine
++ *
++ *  This class extends the coroutine by the needed functionality to put them in
++ *  list, so the scheduler can handle them.
++ *
++ **/
++class Entrant : public Chain, public Coroutine{
++public:
++  /** \brief Default constructor
++   *
++   * \param tos pointer to the stack used by this coroutine
++   **/
++  Entrant(void* tos) : Coroutine(tos){}
++};
++
++#endif
+diff --git a/include/thread/kickoff.h b/include/thread/kickoff.h
+new file mode 100644
+index 0000000..f4829e5
+--- /dev/null
++++ b/include/thread/kickoff.h
+@@ -0,0 +1,19 @@
++#ifndef __kickoff_header__
++#define __kickoff_header__
++
++#include "thread/coroutine.h"
++
++/** \brief start a coroutine initially
++ *
++ * This method is not called directly. It is called throught clever
++ * manipulaiton of the stack used by the coroutine. It has to be ensured that
++ * this method never returns, since the saved instruction pointer on the stack
++ * is bogus.
++ *
++ * \todo write implementation
++ *
++ * \param object the coroutine to start
++ **/
++void kickoff(Coroutine* object);
++
++#endif
+diff --git a/include/thread/scheduler.h b/include/thread/scheduler.h
+new file mode 100644
+index 0000000..147811a
+--- /dev/null
++++ b/include/thread/scheduler.h
+@@ -0,0 +1,67 @@
++/*---------------------------------------------------------------------------*
++ * Operating Systems I                                                       *
++ *---------------------------------------------------------------------------*
++ *                                                                           *
++ *                          S C H E D U L E R                                *
++ *                                                                           *
++ *---------------------------------------------------------------------------*/
++
++#ifndef __schedule_include__
++#define __schedule_include__
++
++#include "thread/dispatch.h"
++#include "thread/entrant.h"
++#include "object/queue.h"
++ 
++/** \brief Simple FIFO scheduler **/
++class Scheduler : protected Dispatcher {
++private:
++  /** Queue of threads that are ready to be processed
++   *
++   * \todo write declaration
++   * **/
++
++public:
++  /** \brief Start the scheduling by starting the first thread
++   *
++   * If there is one contained in the queue of the scheduler.
++   *
++   * \todo write implementation
++   **/ 
++	void schedule();
++  
++  /** \brief Insert the specified thread into the ready queue
++   *
++   * \todo write implementation
++   *
++   * \param that reference to the thread to be inserted
++   **/
++  void ready(Entrant& that);
++
++  /** \brief Remove the currently active thread from the queue
++   *
++   * If there are no more threads, wait for new threads to arive.
++   *
++   * \todo write implementation
++   **/
++  void exit();
++
++  /** \brief Remove the specified thread from the queue of processes.
++   *
++   * If the supplied entry is equal to the currently active coroutine, call exit().
++   *
++   * \todo write implementation
++   *
++   * \param that reference of the thread to be killed.
++   */
++  void kill(Entrant* that);
++
++  /** \brief Use the scheduling algorithm to get the next thread and
++   * resumes with that thread.
++   *
++   * \todo write implementation
++   **/
++  void resume();
++};
++
++#endif
+diff --git a/include/user/appl.h b/include/user/appl.h
+index 383bf0b..88caee1 100644
+--- a/include/user/appl.h
++++ b/include/user/appl.h
+@@ -9,18 +9,25 @@
+ #ifndef __application_include__
+ #define __application_include__
+ 
++#include "thread/entrant.h"
++
+ /** \brief Basis of OOStuBs-Applications
+  *
+  * This class defines the only application used by oo-StuBS. Every application
+  * class is derived from this class.
+  */        
+-class Application {
++class Application : public Entrant{
+ public:
+-                    
++  /** \brief Default Constructor passing stack
++   *
++   * \param tos top of stack pointer
++   **/
++  Application(void* tos) : Entrant(tos){}
++
+   /** \brief Start the application
+    *
+    * This method must be overwritten by the derived class.
+-   */
++   **/
+   virtual void action ()=0;
+ };
+ 
+diff --git a/include/user/task4.h b/include/user/task4.h
+new file mode 100644
+index 0000000..3977cbd
+--- /dev/null
++++ b/include/user/task4.h
+@@ -0,0 +1,133 @@
++#include "user/appl.h"
++
++/** \brief Fourth test application
++ *
++ * Showing the functionality of coroutine scheduling, by starting 4 coroutine
++ * based applications.
++ **/
++class Task4 : public Application{
++	private:
++		/** \brief Stack name declaration **/
++		enum StackNames{
++			task4Stack,		/**<index of the stack of task4**/
++			rotCursorStack,	/**<index of the stack of the rotating cursor**/
++			counter1Stack,	/**<index of the stack of the first counter**/
++			counter2Stack,	/**<index of the stack of the second counter**/
++			keyLoggerStack,	/**<index of the stack of the keyboard printer**/
++			numStacks		/**<number of stacks**/
++		};
++
++		/** \brief Parameters for the sub applications **/
++		enum Constants{
++			stackSize=1024,			/**< size of the stacks of the applications **/
++			rotCursorX=79,			/**< X position of the rotating cursor on the screen **/
++			rotCursorY=0,			/**< Y position of the rotating cursor on the screen **/
++			counter1X=10,			/**< X position of the first counter on the screen **/
++			counter1Y=10,			/**< Y position of the first counter on the screen **/
++			counter2X=10,			/**< X position of the second counter on the screen **/
++			counter2Y=15,			/**< Y position of the second counter on the screen **/
++			counterIter=1000000,	/**< Number of iterations before resuming **/
++			keyLoggerX=10,			/**< X position of the keyboard output on the screen **/
++			keyLoggerY=20			/**< Y position of the keyboard output on the screen **/
++		};
++
++/** \brief statically created stacks for the applications **/
++static unsigned char stacks[numStacks][stackSize];
++
++/** \brief %Rotating symbol application
++ *
++ * This coroutine creates a rotating symbol in the upper left corner of the
++ * screen, to show "quasi"-parallel execution of coroutines
++ **/
++class RotCursor : public Application
++{
++	private:
++		/**\brief internal state to save current symbol **/
++		unsigned char i;
++		/**\brief internal position to print symbol to **/
++		unsigned short x,y;
++
++	public:
++		/** \brief Default constructor
++		 *
++		 * Setting the start symbol
++		 **/
++		RotCursor(unsigned char* stack, unsigned short x, unsigned short y);
++
++		/** \brief start outputting the symbol
++		 *
++		 * This method resumes after each iteration
++		 **/
++		virtual void action();
++};
++
++/** \brief Counting application
++ *
++ * This coroutine counts a value on a fixed position on the screen.
++ * It is a greedy application, that eat a lot of CPU cycles before resuming.
++ **/
++class Counter : public Application
++{
++	private:
++		/** \brief current counter value **/
++		unsigned int i;
++		/**\brief internal position to print counter value to **/
++		unsigned short x,y;
++
++	public:
++		/** \brief Default constructor
++		 *
++		 * Setting the counter to 0
++		 **/
++		Counter(unsigned char* stack, unsigned short x, unsigned short y);
++
++		/** \brief start outputting and incrementing the counter value
++		 *
++		 * This method resumes after counterIter iterations
++		 **/
++		virtual void action();
++};
++
++/** \brief %Key logging application
++ *
++ * This coroutine imitates the first task, by polling the keyboard controller
++ * and outputting the keys on a fixed position on the screen
++ **/
++class KeyLogger : public Application
++{
++	private:
++		/**\brief internal position to print keys to **/
++		unsigned short x,y;
++		
++	public:
++		/** \brief Default constructor **/
++		KeyLogger(unsigned char* stack, unsigned short x, unsigned short y);
++
++		/** \brief start outputting the fetched keys
++		 *
++		 * This method resumes after each interation
++		 **/
++		virtual void action();
++};
++		/** \brief Application for a rotating symbol **/
++		RotCursor rotCursor;
++		/** \brief Application for a printed out counter 1**/
++		Counter counter1;
++		/** \brief Application for a printed out counter 2**/
++		Counter counter2;
++		/** \brief Application for key output **/
++		KeyLogger keyLogger;
++
++	public:
++		/** \brief Default Constructor 
++		 *
++		 * Setting the applications up
++		 **/
++		Task4();
++
++		/** \brief start operation
++		 *
++		 * registers the applications with the scheduler and exit
++		 **/
++		virtual void action();
++};
+diff --git a/misc/rules.mk b/misc/rules.mk
+index 1b740f5..01ddf22 100644
+--- a/misc/rules.mk
++++ b/misc/rules.mk
+@@ -13,7 +13,7 @@ EMU:=@${EMU}
+ SED:=@${SED}
+ OBJDUMP:=@${OBJDUMP}
+ 
+-SOURCES   = ${SRCASM}/boot.S $(filter-out ${SRCASM}/boot.S, $(wildcard ${SRC}/*/*.cc ${SRC}/*.cc ${SRCASM}/*.S ))
++SOURCES   = ${SRCASM}/boot.S $(filter-out ${SRCASM}/boot.S, $(wildcard ${SRC}/*/*.cc ${SRC}/*.cc ${SRC}/*/*.c ${SRCASM}/*.S ))
+ HEADERS  := $(filter %.h, $(wildcard ${INCLUDE}/*/*.h))
+ DOXS     := $(wildcard ${DOC}/*.dox)
+ DEPS     := $(addprefix ${BUILD}/,$(addsuffix .d,$(basename $(notdir ${SOURCES}))))
+@@ -39,8 +39,12 @@ ${BUILD}/%.o: ${SRC}/*/%.cc ${BUILD}/%.d Makefile | ${BUILD}
+ 	@echo "(CXX  ) $@ <- $<"
+ 	${CXX} -c ${CXXFLAGS} $< ${INCPATHS} -o $@
+ 
+-${BUILD}/%.o: ${SRC}/%.cc ${BUILD}/%.d Makefile | ${BUILD}
++${BUILD}/%.o: ${SRC}/*/%.c ${BUILD}/%.d Makefile | ${BUILD}
+ 	@echo "(CXX  ) $@ <- $<"
++	${CC} -c ${CFLAGS} $< ${INCPATHS} -o $@
++
++${BUILD}/%.o: ${SRC}/%.cc ${BUILD}/%.d Makefile | ${BUILD}
++	@echo "(CC   ) $@ <- $<"
+ 	${CXX} -c ${CXXFLAGS} $< ${INCPATHS} -o $@
+ 
+ ${BUILD}/%.o: ${SRCASM}/%.S  Makefile | ${BUILD}
+@@ -57,6 +61,11 @@ ${BUILD}/%.d: ${SRC}/*/%.cc | ${BUILD}
+ 	${SED} "s!\($(notdir $(basename $@)).o\)!${BUILD}/\1!g" $@.temp > $@
+ 	@rm -f $@.temp
+ 
++${BUILD}/%.d: ${SRC}/*/%.c | ${BUILD}
++	${CC} -M ${CFLAGS} $< ${INCPATHS} -o $@.temp
++	${SED} "s!\($(notdir $(basename $@)).o\)!${BUILD}/\1!g" $@.temp > $@
++	@rm -f $@.temp
++
+ ${BUILD}/%.d: ${SRC}/%.cc | ${BUILD}
+ 	${CXX} -M ${CXXFLAGS} $< ${INCPATHS} -o $@.temp
+ 	${SED} "s!\($(notdir $(basename $@)).o\)!${BUILD}/\1!g" $@.temp > $@
+diff --git a/src/asm/tocAsm.S b/src/asm/tocAsm.S
+new file mode 100644
+index 0000000..8aa40d7
+--- /dev/null
++++ b/src/asm/tocAsm.S
+@@ -0,0 +1,11 @@
++#define ASM 1
++#include "machine/toc.h"
++
++/* This file is a gnu assembler file, therefore AT&T Syntax is needed*/
++
++.global toc_go, toc_switch
++
++toc_go:
++
++toc_switch:
++
+diff --git a/src/machine/toc.c b/src/machine/toc.c
+new file mode 100644
+index 0000000..2f60dcb
+--- /dev/null
++++ b/src/machine/toc.c
+@@ -0,0 +1,9 @@
++/*---------------------------------------------------------------------------*
++ * Operating Systems I                                                       *
++ *---------------------------------------------------------------------------*
++ *                                                                           *
++ *                                 T O C                                     *
++ *                                                                           *
++ *---------------------------------------------------------------------------*/
++
++#include "machine/toc.h"
+diff --git a/src/main.cc b/src/main.cc
+index f9d4c18..7556c4a 100644
+--- a/src/main.cc
++++ b/src/main.cc
+@@ -9,7 +9,7 @@
+ /* INCLUDES */
+ 
+ #include "machine/multiboot.h"
+-//#include "user/task3.h"
++//#include "user/task4.h"
+ 
+ /* GLOBAL OBJECTS */
+ 
+@@ -24,7 +24,7 @@ extern "C" void kernel(uint32_t magic, const Multiboot_Info* addr);
+  * This is the entry point of the operating system.  If this function returns
+  * all interrupts will be disabled and the cpu will be halted.
+  *
+- * \todo uncomment Task3
++ * \todo uncomment Task4
+  *
+  * \param magic bootloader magic value
+  * \param addr address of multiboot info structure
+@@ -32,8 +32,9 @@ extern "C" void kernel(uint32_t magic, const Multiboot_Info* addr);
+ 
+ void kernel(uint32_t magic, const Multiboot_Info* addr){
+ 
+-//Task3 task;
++//Task4 task;
+ 
+-//task.action();
++//scheduler.ready(task);
+ 
++//scheduler.schedule();
+ }
+diff --git a/src/thread/coroutine.cc b/src/thread/coroutine.cc
+new file mode 100644
+index 0000000..7fc6794
+--- /dev/null
++++ b/src/thread/coroutine.cc
+@@ -0,0 +1,19 @@
++/*---------------------------------------------------------------------------*
++ * Operating Systems I                                                       *
++ *---------------------------------------------------------------------------*
++ *                                                                           *
++ *                          C O R O U T I N E                                *
++ *                                                                           *
++ *---------------------------------------------------------------------------*/
++
++#include "thread/coroutine.h"
++
++/* to be compatible with C the signature of the kickoff function need to be changed to do this, one can cast the kickoff function using the fallowing line:
++ * void(*kickoffC)(void*) = reinterpret_cast<void(*)(void*)>(&kickoff);
++ *
++ * kickoffC can then be passed to toc_settle
++ */
++
++Coroutine::Coroutine(void* tos){
++
++}
+diff --git a/src/thread/dispatch.cc b/src/thread/dispatch.cc
+new file mode 100644
+index 0000000..fc46525
+--- /dev/null
++++ b/src/thread/dispatch.cc
+@@ -0,0 +1,9 @@
++/*---------------------------------------------------------------------------*
++ * Operating Systems I                                                       *
++ *---------------------------------------------------------------------------*
++ *                                                                           *
++ *                          D I S P A T C H E R                              *
++ *                                                                           *
++ *---------------------------------------------------------------------------*/
++
++#include "thread/dispatch.h"
+diff --git a/src/thread/kickoff.cc b/src/thread/kickoff.cc
+new file mode 100644
+index 0000000..0f80817
+--- /dev/null
++++ b/src/thread/kickoff.cc
+@@ -0,0 +1 @@
++#include "thread/kickoff.h"
+diff --git a/src/thread/scheduler.cc b/src/thread/scheduler.cc
+new file mode 100644
+index 0000000..585d9c5
+--- /dev/null
++++ b/src/thread/scheduler.cc
+@@ -0,0 +1,9 @@
++/*---------------------------------------------------------------------------*
++ * Operating Systems I                                                       *
++ *---------------------------------------------------------------------------*
++ *                                                                           *
++ *                          S C H E D U L E R                                *
++ *                                                                           *
++ *---------------------------------------------------------------------------*/
++
++#include "thread/scheduler.h"
+diff --git a/src/user/task4.cc b/src/user/task4.cc
+new file mode 100644
+index 0000000..048e7a1
+--- /dev/null
++++ b/src/user/task4.cc
+@@ -0,0 +1,99 @@
++#include "user/task4.h"
++#include "device/cgastr.h"
++#include "device/keyboard.h"
++#include "thread/scheduler.h"
++#include "machine/cpu.h"
++
++extern CGA_Stream kout;
++extern Keyboard keyboard;
++extern Scheduler scheduler;
++extern CPU cpu;
++
++unsigned char Task4::stacks[Task4::numStacks][Task4::stackSize];
++
++Task4::RotCursor::RotCursor(unsigned char* stack, unsigned short x, unsigned short y)
++				: Application(stack)
++{
++	this->i=0;
++	this->x=x;
++	this->y=y;
++}
++
++void Task4::RotCursor::action(){
++	while(true)
++	{
++		kout.flush();
++		kout.setpos(x,y);
++		switch(i++%4)
++		{
++			case(0):	kout << '|';
++						break;
++			case(1):	kout << '/';
++						break;	
++			case(2):	kout << '-';
++						break;
++			case(3):	kout << '\\';
++						break;
++		}
++		kout.flush();
++		resume();
++	}
++}
++
++Task4::Counter::Counter(unsigned char* stack, unsigned short x, unsigned short y) 
++			   : Application(stack)
++{
++	this->i=0;
++	this->x=x;
++	this->y=y;
++}
++
++void Task4::Counter::action(){
++	while(true)
++	{
++		kout.flush();
++		kout.setpos(x,y);
++		kout << "Counter: " << i++ << endl;
++		if(i%100000==0)
++			resume();
++	}
++}
++
++Task4::KeyLogger::KeyLogger(unsigned char* stack, unsigned short x, unsigned short y)
++				 : Application(stack)
++{
++	this->x=x;
++	this->y=y;
++}
++
++void Task4::KeyLogger::action(){
++	while(true)
++	{
++		Key k;
++		kout.flush();
++		kout.setpos(x,y);
++		kout << "Key: ";
++		k=keyboard.key_hit();
++		if(k.valid())
++			kout << k.ascii() << endl;
++		resume();
++	}
++}
++
++Task4::Task4() : Application(stacks[task4Stack]+stackSize),
++				 rotCursor(stacks[rotCursorStack]+stackSize, rotCursorX, rotCursorY),
++				 counter1(stacks[counter1Stack]+stackSize, counter1X, counter1Y),
++				 counter2(stacks[counter2Stack]+stackSize, counter2X, counter2Y),
++				 keyLogger(stacks[keyLoggerStack]+stackSize, keyLoggerX, keyLoggerY)
++{
++	kout.setpos(31,1);
++	kout << "OOStuBs - Task 4" << endl << endl;
++}
++
++void Task4::action(){
++	cpu.disable_int();
++	scheduler.ready(rotCursor);
++	scheduler.ready(counter1);
++	scheduler.ready(counter2);
++	scheduler.ready(keyLogger);
++}
+-- 
+1.7.2.2
+

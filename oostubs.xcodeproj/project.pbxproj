@@ -7,6 +7,20 @@
 	objects = {
 
 /* Begin PBXFileReference section */
+		5B0C069314B7ACF0006A57A2 /* coroutine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = coroutine.h; sourceTree = "<group>"; };
+		5B0C069414B7ACF0006A57A2 /* dispatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dispatch.h; sourceTree = "<group>"; };
+		5B0C069514B7ACF0006A57A2 /* entrant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = entrant.h; sourceTree = "<group>"; };
+		5B0C069614B7ACF0006A57A2 /* kickoff.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = kickoff.h; sourceTree = "<group>"; };
+		5B0C069714B7ACF0006A57A2 /* scheduler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scheduler.h; sourceTree = "<group>"; };
+		5B0C069814B7AD1F006A57A2 /* toc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = toc.h; sourceTree = "<group>"; };
+		5B0C069914B7AD30006A57A2 /* task4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = task4.h; sourceTree = "<group>"; };
+		5B0C069A14B7AD69006A57A2 /* tocAsm.S */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = tocAsm.S; sourceTree = "<group>"; };
+		5B0C069B14B7AD79006A57A2 /* toc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = toc.c; sourceTree = "<group>"; };
+		5B0C069C14B7AD8A006A57A2 /* task4.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = task4.cc; sourceTree = "<group>"; };
+		5B0C069E14B7AD9A006A57A2 /* coroutine.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = coroutine.cc; sourceTree = "<group>"; };
+		5B0C069F14B7AD9A006A57A2 /* dispatch.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dispatch.cc; sourceTree = "<group>"; };
+		5B0C06A014B7AD9A006A57A2 /* kickoff.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = kickoff.cc; sourceTree = "<group>"; };
+		5B0C06A114B7AD9A006A57A2 /* scheduler.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = scheduler.cc; sourceTree = "<group>"; };
 		5B0F83FF14852DA7009507D5 /* guard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = guard.h; sourceTree = "<group>"; };
 		5B0F840114852DB1009507D5 /* locker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = locker.h; sourceTree = "<group>"; };
 		5B0F840214852DB1009507D5 /* secure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = secure.h; sourceTree = "<group>"; };
@@ -52,6 +66,29 @@
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
+		5B0C069214B7ACF0006A57A2 /* thread */ = {
+			isa = PBXGroup;
+			children = (
+				5B0C069314B7ACF0006A57A2 /* coroutine.h */,
+				5B0C069414B7ACF0006A57A2 /* dispatch.h */,
+				5B0C069514B7ACF0006A57A2 /* entrant.h */,
+				5B0C069614B7ACF0006A57A2 /* kickoff.h */,
+				5B0C069714B7ACF0006A57A2 /* scheduler.h */,
+			);
+			path = thread;
+			sourceTree = "<group>";
+		};
+		5B0C069D14B7AD9A006A57A2 /* thread */ = {
+			isa = PBXGroup;
+			children = (
+				5B0C069E14B7AD9A006A57A2 /* coroutine.cc */,
+				5B0C069F14B7AD9A006A57A2 /* dispatch.cc */,
+				5B0C06A014B7AD9A006A57A2 /* kickoff.cc */,
+				5B0C06A114B7AD9A006A57A2 /* scheduler.cc */,
+			);
+			path = thread;
+			sourceTree = "<group>";
+		};
 		5B739447145C5E7E00C4F93D = {
 			isa = PBXGroup;
 			children = (
@@ -63,6 +100,7 @@
 		5B739458145C5F2700C4F93D /* src */ = {
 			isa = PBXGroup;
 			children = (
+				5B0C069D14B7AD9A006A57A2 /* thread */,
 				5B739459145C5F2700C4F93D /* asm */,
 				5B73945C145C5F2700C4F93D /* device */,
 				5B73945E145C5F2700C4F93D /* guard */,
@@ -77,6 +115,7 @@
 		5B739459145C5F2700C4F93D /* asm */ = {
 			isa = PBXGroup;
 			children = (
+				5B0C069A14B7AD69006A57A2 /* tocAsm.S */,
 				5B73945A145C5F2700C4F93D /* boot.S */,
 				5B73945B145C5F2700C4F93D /* compat.S */,
 			);
@@ -105,6 +144,7 @@
 		5B739460145C5F2700C4F93D /* machine */ = {
 			isa = PBXGroup;
 			children = (
+				5B0C069B14B7AD79006A57A2 /* toc.c */,
 				5BE3C04E14606C7A00CACEE8 /* pic.cc */,
 				5BE3C04F14606C7A00CACEE8 /* plugbox.cc */,
 				5B739462145C5F2700C4F93D /* cgascr.cc */,
@@ -126,6 +166,7 @@
 		5B739468145C5F2700C4F93D /* user */ = {
 			isa = PBXGroup;
 			children = (
+				5B0C069C14B7AD8A006A57A2 /* task4.cc */,
 				5B0F840814852E20009507D5 /* task3.cc */,
 				5BE3C05014606C9700CACEE8 /* task2.cc */,
 				5B73946A145C5F2700C4F93D /* task1.cc */,
@@ -136,6 +177,7 @@
 		5B73946B145C5F3200C4F93D /* include */ = {
 			isa = PBXGroup;
 			children = (
+				5B0C069214B7ACF0006A57A2 /* thread */,
 				5BE3C05114606D1A00CACEE8 /* guard */,
 				5B73946C145C5F3200C4F93D /* config.h */,
 				5B73946D145C5F3200C4F93D /* device */,
@@ -159,6 +201,7 @@
 		5B73946F145C5F3200C4F93D /* machine */ = {
 			isa = PBXGroup;
 			children = (
+				5B0C069814B7AD1F006A57A2 /* toc.h */,
 				5BE3C04A14606C1700CACEE8 /* cpu.h */,
 				5BE3C04B14606C1700CACEE8 /* pic.h */,
 				5BE3C04C14606C1700CACEE8 /* plugbox.h */,
@@ -185,6 +228,7 @@
 		5B739478145C5F3200C4F93D /* user */ = {
 			isa = PBXGroup;
 			children = (
+				5B0C069914B7AD30006A57A2 /* task4.h */,
 				5B0F840514852DDF009507D5 /* task3.h */,
 				5BE3C04D14606C4700CACEE8 /* task2.h */,
 				5B739479145C5F3200C4F93D /* appl.h */,

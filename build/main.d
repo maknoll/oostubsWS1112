@@ -13,4 +13,7 @@
  include/machine/key.h include/machine/pic.h include/machine/cpu.h \
  include/machine/plugbox.h include/guard/gate.h include/object/chain.h \
  include/device/keyboard.h include/guard/guard.h include/guard/locker.h \
- include/object/queue.h include/user/task3.h include/user/appl.h
+ include/object/queue.h include/user/task4.h include/user/appl.h \
+ include/thread/entrant.h include/thread/coroutine.h \
+ include/machine/toc.h include/thread/scheduler.h \
+ include/thread/dispatch.h

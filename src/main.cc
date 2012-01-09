@@ -16,7 +16,8 @@
 #include "machine/plugbox.h"
 #include "device/keyboard.h"
 #include "guard/guard.h"
-#include "user/task3.h"
+#include "user/task4.h"
+#include "thread/scheduler.h"
 
 /* GLOBAL OBJECTS */
 
@@ -28,6 +29,7 @@ CPU cpu;
 Plugbox plugbox;
 Keyboard keyboard;
 Guard guard;
+Scheduler scheduler;
 
 /* METHODS  */
 
@@ -38,7 +40,7 @@ extern "C" void kernel(uint32_t magic, const Multiboot_Info* addr);
  * This is the entry point of the operating system.  If this function returns
  * all interrupts will be disabled and the cpu will be halted.
  *
- * \todo uncomment Task3
+ * \todo uncomment Task4
  *
  * \param magic bootloader magic value
  * \param addr address of multiboot info structure
@@ -46,12 +48,16 @@ extern "C" void kernel(uint32_t magic, const Multiboot_Info* addr);
 
 void kernel(uint32_t magic, const Multiboot_Info* addr){
 
-//  Task1 task(magic, addr); 
+    kout.clear();
     
     keyboard.plugin();
-
-    Task3 task;
-
+    
+    Task4 task;
+    
+    //scheduler.ready(task);
+    
     task.action();
+  
+    scheduler.schedule();
 
 }

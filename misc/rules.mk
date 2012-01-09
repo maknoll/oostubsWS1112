@@ -13,7 +13,7 @@ EMU:=@${EMU}
 SED:=@${SED}
 OBJDUMP:=@${OBJDUMP}
 
-SOURCES   = ${SRCASM}/boot.S $(filter-out ${SRCASM}/boot.S, $(wildcard ${SRC}/*/*.cc ${SRC}/*.cc ${SRCASM}/*.S ))
+SOURCES   = ${SRCASM}/boot.S $(filter-out ${SRCASM}/boot.S, $(wildcard ${SRC}/*/*.cc ${SRC}/*.cc ${SRC}/*/*.c ${SRCASM}/*.S ))
 HEADERS  := $(filter %.h, $(wildcard ${INCLUDE}/*/*.h))
 DOXS     := $(wildcard ${DOC}/*.dox)
 DEPS     := $(addprefix ${BUILD}/,$(addsuffix .d,$(basename $(notdir ${SOURCES}))))
@@ -39,8 +39,12 @@ ${BUILD}/%.o: ${SRC}/*/%.cc ${BUILD}/%.d Makefile | ${BUILD}
 	@echo "(CXX  ) $@ <- $<"
 	${CXX} -c ${CXXFLAGS} $< ${INCPATHS} -o $@
 
-${BUILD}/%.o: ${SRC}/%.cc ${BUILD}/%.d Makefile | ${BUILD}
+${BUILD}/%.o: ${SRC}/*/%.c ${BUILD}/%.d Makefile | ${BUILD}
 	@echo "(CXX  ) $@ <- $<"
+	${CC} -c ${CFLAGS} $< ${INCPATHS} -o $@
+
+${BUILD}/%.o: ${SRC}/%.cc ${BUILD}/%.d Makefile | ${BUILD}
+	@echo "(CC   ) $@ <- $<"
 	${CXX} -c ${CXXFLAGS} $< ${INCPATHS} -o $@
 
 ${BUILD}/%.o: ${SRCASM}/%.S  Makefile | ${BUILD}
@@ -54,6 +58,11 @@ ${BUILD}/%.d: ${SRCASM}/%.S | ${BUILD}
 
 ${BUILD}/%.d: ${SRC}/*/%.cc | ${BUILD}
 	${CXX} -M ${CXXFLAGS} $< ${INCPATHS} -o $@.temp
+	${SED} "s!\($(notdir $(basename $@)).o\)!${BUILD}/\1!g" $@.temp > $@
+	@rm -f $@.temp
+
+${BUILD}/%.d: ${SRC}/*/%.c | ${BUILD}
+	${CC} -M ${CFLAGS} $< ${INCPATHS} -o $@.temp
 	${SED} "s!\($(notdir $(basename $@)).o\)!${BUILD}/\1!g" $@.temp > $@
 	@rm -f $@.temp
 
