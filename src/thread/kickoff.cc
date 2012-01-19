@@ -2,4 +2,5 @@
 
 void kickoff(Coroutine* object) {
     object->action();
+    object->exit();
 }

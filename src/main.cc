@@ -54,9 +54,9 @@ void kernel(uint32_t magic, const Multiboot_Info* addr){
     
     Task4 task;
     
-    //scheduler.ready(task);
+    scheduler.ready(task);
     
-    task.action();
+    //task.action();
   
     scheduler.schedule();
 

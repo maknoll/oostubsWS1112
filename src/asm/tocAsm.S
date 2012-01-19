@@ -7,26 +7,26 @@
 
 toc_go:
     mov 4(%esp), %ecx
-    mov 0(%ecx), %ebx
-    mov 4(%ecx), %esi
-    mov 8(%ecx), %edi
-    mov 12(%ecx), %ebp
-    mov 16(%ecx), %esp
+    mov EBX_OFFSET(%ecx), %ebx
+    mov ESI_OFFSET(%ecx), %esi
+    mov EDI_OFFSET(%ecx), %edi
+    mov EBP_OFFSET(%ecx), %ebp
+    mov ESP_OFFSET(%ecx), %esp
     ret
 
 toc_switch:
     mov 4(%esp), %ecx
-    mov %ebx, 0(%ecx)
-    mov %esi, 4(%ecx)
-    mov %edi, 8(%ecx)
-    mov %ebp, 12(%ecx)
-    mov %esp, 16(%ecx)
+    mov %ebx, EBX_OFFSET(%ecx)
+    mov %esi, ESI_OFFSET(%ecx)
+    mov %edi, EDI_OFFSET(%ecx)
+    mov %ebp, EBP_OFFSET(%ecx)
+    mov %esp, ESP_OFFSET(%ecx)
 
     mov 8(%esp), %ecx
-    mov 0(%ecx), %ebx
-    mov 4(%ecx), %esi
-    mov 8(%ecx), %edi
-    mov 12(%ecx), %ebp
-    mov 16(%ecx), %esp
+    mov EBX_OFFSET(%ecx), %ebx
+    mov ESI_OFFSET(%ecx), %esi
+    mov EDI_OFFSET(%ecx), %edi
+    mov EBP_OFFSET(%ecx), %ebp
+    mov ESP_OFFSET(%ecx), %esp
     ret
 

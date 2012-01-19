@@ -54,7 +54,7 @@ void Task4::Counter::action(){
 		kout.flush();
 		kout.setpos(x,y);
 		kout << "Counter: " << i++ << endl;
-		if(i%100000==0)
+		if(i%50000==0)
 			resume();
 	}
 }
