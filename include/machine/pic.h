@@ -24,6 +24,7 @@ public:
 	/** \brief External interrupt sources **/
 	enum Interrupts
 	{
+		timer = 0,
 		keyboard = 1	/**< Keyboard controller **/
 	};
     

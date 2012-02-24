@@ -28,6 +28,7 @@ private:
 public:
     enum Slots
     {
+		timer = 32,
         keyboard = 33
     };
     

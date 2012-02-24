@@ -1,0 +1,579 @@
+>From 783783a8e74fd2e1f0c2f0ec7ea32f0bd9caa7c4 Mon Sep 17 00:00:00 2001
+From: Christoph Steup <christoph.steup@student.uni-magdeburg.de>
+Date: Sat, 11 Dec 2010 01:31:38 +0100
+Subject: [PATCH] OOStuBs Task5
+
+
+diff --git a/Makefile b/Makefile
+index 8688afe..f56ed0d 100644
+--- a/Makefile
++++ b/Makefile
+@@ -9,7 +9,7 @@ CXXFLAGS=
+ LDFLAGS=-O0
+ ASMFLAGS=-g
+ 
+-OBJECT_IGNORE= task1.o task2.o task3.o task4.o
++OBJECT_IGNORE= task1.o task2.o task3.o task4.o task5.o
+ 
+ INCPATHS=
+ LDPATHS=
+diff --git a/include/device/watch.h b/include/device/watch.h
+new file mode 100644
+index 0000000..518cc30
+--- /dev/null
++++ b/include/device/watch.h
+@@ -0,0 +1,57 @@
++/*---------------------------------------------------------------------------*
++ * Operating Systems I                                                       *
++ *---------------------------------------------------------------------------*
++ *                                                                           *
++ *                              W A T C H                                    *
++ *                                                                           *
++ *---------------------------------------------------------------------------*/
++
++#ifndef __watch_include__
++#define __watch_include__
++
++/* INCLUDES */
++#include "guard/gate.h"
++#include "machine/pit.h"
++
++/** \brief Interrupt handling class for PIT interrupts
++ *
++ * This class implements the interrupt handler for PIT interrupts, therefore it
++ * is a timer with a specific task.  In OOStuBs the class is used to execute
++ * the preemptible switch of Threads
++ **/
++class Watch : public Gate, public PIT {
++public:
++  /** \brief Default Constructor
++   *
++   * Initailises the PIT with supplied value
++   *
++   * \todo write implementation
++   *
++   * \param us preemtible Thread execution time in microseconds
++   **/
++  Watch (unsigned int us) : PIT (us) {}
++
++  /** \brief register the watch with the plugbox and enable hardware interrupt
++   *
++   * \todo write implementation
++   */
++  void windup();
++
++  /** \brief prologue of the timer interrupt
++   *
++   * does nothing
++   *
++   * \todo write implementation
++   *
++   * \return always true
++   **/
++  virtual bool prologue();
++
++  /** \brief epilogue implementing the thread switch
++   *
++   * \todo write implementation
++   **/
++  virtual void epilogue();
++};
++
++#endif
+diff --git a/include/machine/pic.h b/include/machine/pic.h
+index c492bc8..5bf5c91 100644
+--- a/include/machine/pic.h
++++ b/include/machine/pic.h
+@@ -24,6 +24,7 @@ public:
+ 
+ 	enum Interrupts
+ 	{
++		timer=0,
+ 		keyboard = 1
+ 	};
+ 
+diff --git a/include/machine/pit.h b/include/machine/pit.h
+new file mode 100644
+index 0000000..98405ea
+--- /dev/null
++++ b/include/machine/pit.h
+@@ -0,0 +1,46 @@
++/*---------------------------------------------------------------------------*
++ * Operating Systems I                                                       *
++ *---------------------------------------------------------------------------*
++ *                                                                           *
++ *                                  P I T                                    *
++ *                                                                           *
++ *---------------------------------------------------------------------------*/
++
++#ifndef __pit_include__
++#define __pit_include__
++
++/** \brief Programmable Interval Timer driver
++ *
++ * This driver provides discrete time interval notifications needed to
++ * implement clocks and timer.
++ **/
++class PIT { 
++public:
++  /** \brief Default Constructor
++   * 
++   * Initialising the PIT with a specific configurations containing timer interval and mode of operation.
++   *
++   * \todo write implementation
++   *
++   * \param us timer intervall in microseconds
++   **/
++  PIT (unsigned short us);
++  
++  /** \brief get the current timer intervall
++   *
++   * \todo write implementation
++   *
++   * \return the current timer interval of the PIT.
++   */
++  unsigned short interval ();
++  
++  /** \brief reprogram the PIT with a new timer interval
++   * 
++   * \todo write implementation
++   *
++   * \param us the new timer interval
++   */
++  void interval(unsigned short us); 
++};
++
++#endif
+diff --git a/include/machine/plugbox.h b/include/machine/plugbox.h
+index 9674305..f4dea34 100644
+--- a/include/machine/plugbox.h
++++ b/include/machine/plugbox.h
+@@ -21,6 +21,7 @@ class Plugbox {
+ public:
+ 	enum Slots
+ 	{
++		timer = 32,
+ 		keyboard = 33
+ 	};
+ 
+diff --git a/include/syscall/guarded_scheduler.h b/include/syscall/guarded_scheduler.h
+new file mode 100644
+index 0000000..40144ea
+--- /dev/null
++++ b/include/syscall/guarded_scheduler.h
+@@ -0,0 +1,65 @@
++/*---------------------------------------------------------------------------*
++ * Operating Systems I                                                       *
++ *---------------------------------------------------------------------------*
++ *                                                                           *
++ *                   G U A R D E D _ S C H E D U L E R                       *
++ *                                                                           *
++ *---------------------------------------------------------------------------*/
++
++#ifndef __guarded_scheduler_include__
++#define __guarded_scheduler_include__
++
++#include "syscall/thread.h"
++#include "thread/scheduler.h"
++
++/** \brief Scheduler guarded by Secure
++ *
++ * This Scheduler is interrupt safe and therefore needed to cope with
++ * preemptive switching of Threads.  Since now the multitasking is preemptiv
++ * Threads instead of Coroutines are handled.
++ **/
++class Guarded_Scheduler : public Scheduler{
++public:
++  /** \brief Start the scheduling by starting the first thread
++   *
++   * If there is one contained in the queue of the scheduler.
++   *
++   * \todo write implementation
++   **/ 
++  void schedule();
++  
++  /** \brief Insert the specified thread into the ready queue
++   *
++   * \todo write implementation
++   *
++   * \param that reference to the thread to be inserted
++   **/
++  void ready(Thread& that);
++
++  /** \brief Remove the currently active thread from the queue
++   *
++   * If there are no more threads, wait for new threads to arive.
++   *
++   * \todo write implementation
++   **/
++  void exit();
++
++  /** \brief Remove the specified thread from the queue of processes.
++   *
++   * If the supplied entry is equal to the currently active coroutine, call exit().
++   *
++   * \todo write implementation
++   *
++   * \param that reference of the thread to be killed.
++   */
++  void kill(Thread* that);
++
++  /** \brief Use the scheduling algorithm to get the next thread and
++   * resume with that thread.
++   *
++   * \todo write implementation
++   **/
++  void resume();
++};
++
++#endif
+diff --git a/include/syscall/thread.h b/include/syscall/thread.h
+new file mode 100644
+index 0000000..77b5fd7
+--- /dev/null
++++ b/include/syscall/thread.h
+@@ -0,0 +1,53 @@
++/*---------------------------------------------------------------------------*
++ * Operating Systems I                                                       *
++ *---------------------------------------------------------------------------*
++ *                                                                           *
++ *                             T H R E A D                                   *
++ *                                                                           *
++ *---------------------------------------------------------------------------*/
++
++#ifndef __thread_include__
++#define __thread_include__
++
++#include "thread/entrant.h"
++
++/** \brief Threads are preemptible multitasking entities
++ *
++ * Every %Thread contain exactly one line of execution, due to their preemptiveness all operations concerning them must be called Secure
++ *
++**/
++class Thread : public Entrant{
++public:
++  /** \brief Default constructor
++   *
++   * Delegates initialization to the underlying Entrant object
++   *
++   * \param tos pointer to the stack used by this thread
++   */
++  Thread(void* tos) : Entrant(tos){}
++
++   /** \brief triggers a context switch
++   *
++   * This method delegates to the Guarded_Scheduler
++   *
++   * \todo write implementation
++   **/
++  void resume();
++
++  /** \brief exit this coroutine
++   *
++   * This method delegates to the Guarded_Scheduler
++   *
++   * \todo write implementation
++   **/
++  void exit();
++
++  /** \brief real function of the %Thread,
++   *
++   * since every thread does something differenct this method has to be
++   * implemented by a subclass of Thread (e.g. Application).
++   **/
++  virtual void action() = 0;   
++};
++
++#endif
+diff --git a/include/user/appl.h b/include/user/appl.h
+index 88caee1..d534331 100644
+--- a/include/user/appl.h
++++ b/include/user/appl.h
+@@ -9,20 +9,20 @@
+ #ifndef __application_include__
+ #define __application_include__
+ 
+-#include "thread/entrant.h"
++#include "syscall/thread.h"
+ 
+ /** \brief Basis of OOStuBs-Applications
+  *
+  * This class defines the only application used by oo-StuBS. Every application
+  * class is derived from this class.
+  */        
+-class Application : public Entrant{
++class Application : public Thread{
+ public:
+   /** \brief Default Constructor passing stack
+    *
+    * \param tos top of stack pointer
+    **/
+-  Application(void* tos) : Entrant(tos){}
++  Application(void* tos) : Thread(tos){}
+ 
+   /** \brief Start the application
+    *
+diff --git a/include/user/task5.h b/include/user/task5.h
+new file mode 100644
+index 0000000..e07809b
+--- /dev/null
++++ b/include/user/task5.h
+@@ -0,0 +1,105 @@
++#include "user/appl.h"
++
++/** \brief Fifth test application
++ *
++ * Showing the functionality of thread scheduling, by starting 3 thread
++ * based applications.
++ **/
++class Task5 : public Application{
++	private:
++/** \brief Declaration of stack names for application stacks **/
++enum StackNames{
++	task5Stack,		/**< Stack of the Task itself **/
++	rotCursorStack, /**< Stack of the rotating Cursor **/
++	counter1Stack,  /**< Stack of the first Counter **/
++	counter2Stack,  /**< Stack of the second Counter **/
++	numStacks       /**< number of stacks in example Task **/
++};
++
++/** \brief Constants used in example Task **/
++enum Constants{
++	stackSize=1024,	/**< size of the stacks **/
++	rotCursorX=79,	/**< X position of the rotating cursor on the screen **/
++	rotCursorY=0,	/**< Y position of the rotating cursor on the screen **/
++	counter1X=10,	/**< X position of the first counter on the screen **/
++	counter1Y=10,	/**< Y position of the first counter on the screen **/
++	counter2X=10,	/**< X position of the second counter on the screen **/
++	counter2Y=15,	/**< Y position of the second counter on the screen **/
++};
++
++/**\brief globally declared byte array to be used as stacks for applications **/
++static unsigned char stacks[numStacks][stackSize];
++
++/** \brief %Rotating symbol application
++ *
++ * This coroutine creates a rotating symbol in the upper left corner of the
++ * screen, to show "quasi"-parallel execution of coroutines
++ **/
++class RotCursor : public Application
++{
++	private:
++		/**\brief internal state to save current symbol **/
++		unsigned char i;
++		/**\brief x and y position for the output on the screen **/
++		unsigned short x, y;
++
++	public:
++		/** \brief Default constructor
++		 *
++		 * Setting the start symbol
++		 **/
++		RotCursor(unsigned char* stack, unsigned short x, unsigned short y);
++
++		/** \brief start outputting the symbol
++		 *
++		 * This method resumes after each interation
++		 **/
++		virtual void action();
++};
++
++/** \brief Counting application
++ *
++ * This coroutine counts a value on a fixed position on the screen
++ **/
++class Counter : public Application
++{
++	private:
++		/** \brief current counter value **/
++		unsigned int i;
++		/**\brief x and y position for the output on the screen **/
++		unsigned short x, y;
++
++	public:
++		/** \brief Default constructor
++		 *
++		 * Setting the counter to 0
++		 **/
++		Counter(unsigned char* stack, unsigned short x, unsigned short y);
++
++		/** \brief start outputting and incrementing the counter value
++		 *
++		 * This method resumes after each interation
++		 **/
++		virtual void action();
++};
++
++		/** \brief Application for a rotating symbol **/
++		RotCursor rotCursor;
++		/** \brief Application for a printed out counter **/
++		Counter counter1;
++		/** \brief Application for a printed out counter **/
++		Counter counter2;
++
++	public:
++		/** \brief Default Constructor 
++		 *
++		 * Setting the applications up
++		 **/
++		Task5();
++
++		/** \brief start operation
++		 *
++		 * registers the applications with the scheduler and exit afterwards
++		 **/
++		virtual void action();
++};
+diff --git a/src/device/watch.cc b/src/device/watch.cc
+new file mode 100644
+index 0000000..c4150e5
+--- /dev/null
++++ b/src/device/watch.cc
+@@ -0,0 +1,9 @@
++/*---------------------------------------------------------------------------*
++ * Operating Systems I                                                       *
++ *---------------------------------------------------------------------------*
++ *                                                                           *
++ *                              W A T C H                                    *
++ *                                                                           *
++ *---------------------------------------------------------------------------*/
++
++#include "device/watch.h"
+diff --git a/src/machine/pit.cc b/src/machine/pit.cc
+new file mode 100644
+index 0000000..99cc1cb
+--- /dev/null
++++ b/src/machine/pit.cc
+@@ -0,0 +1,9 @@
++/*---------------------------------------------------------------------------*
++ * Operating Systems I                                                       *
++ *---------------------------------------------------------------------------*
++ *                                                                           *
++ *                                  P I T                                    *
++ *                                                                           *
++ *---------------------------------------------------------------------------*/
++
++#include "machine/pit.h"
+diff --git a/src/main.cc b/src/main.cc
+index 7556c4a..a313663 100644
+--- a/src/main.cc
++++ b/src/main.cc
+@@ -9,7 +9,7 @@
+ /* INCLUDES */
+ 
+ #include "machine/multiboot.h"
+-//#include "user/task4.h"
++//#include "user/task5.h"
+ 
+ /* GLOBAL OBJECTS */
+ 
+@@ -24,7 +24,7 @@ extern "C" void kernel(uint32_t magic, const Multiboot_Info* addr);
+  * This is the entry point of the operating system.  If this function returns
+  * all interrupts will be disabled and the cpu will be halted.
+  *
+- * \todo uncomment Task4
++ * \todo uncomment Task5
+  *
+  * \param magic bootloader magic value
+  * \param addr address of multiboot info structure
+@@ -32,7 +32,7 @@ extern "C" void kernel(uint32_t magic, const Multiboot_Info* addr);
+ 
+ void kernel(uint32_t magic, const Multiboot_Info* addr){
+ 
+-//Task4 task;
++//Task5 task;
+ 
+ //scheduler.ready(task);
+ 
+diff --git a/src/syscall/thread.cc b/src/syscall/thread.cc
+new file mode 100644
+index 0000000..7270bfa
+--- /dev/null
++++ b/src/syscall/thread.cc
+@@ -0,0 +1 @@
++#include "syscall/thread.h"
+diff --git a/src/user/task5.cc b/src/user/task5.cc
+new file mode 100644
+index 0000000..628cd68
+--- /dev/null
++++ b/src/user/task5.cc
+@@ -0,0 +1,75 @@
++#include "user/task5.h"
++#include "device/cgastr.h"
++#include "device/keyboard.h"
++#include "syscall/guarded_scheduler.h"
++#include "guard/secure.h"
++#include "machine/cpu.h"
++
++extern CGA_Stream kout;
++extern Keyboard keyboard;
++extern Guarded_Scheduler scheduler;
++extern CPU cpu;
++
++unsigned char Task5::stacks[Task5::numStacks][Task5::stackSize];
++
++Task5::RotCursor::RotCursor(unsigned char *stack, unsigned short x, unsigned short y)
++				  : Application(stack)
++{
++	this->i=0;
++	this->x=x;
++	this->y=y;
++}
++
++void Task5::RotCursor::action(){
++	while(true)
++	{
++		Secure s;
++		kout.flush();
++		kout.setpos(x, y);
++		switch(i++%4)
++		{
++			case(0):	kout << '|';
++						break;
++			case(1):	kout << '/';
++						break;	
++			case(2):	kout << '-';
++						break;
++			case(3):	kout << '\\';
++						break;
++		}
++		kout.flush();
++	}
++}
++
++Task5::Counter::Counter(unsigned char *stack, unsigned short x, unsigned short y) : Application(stack)
++{
++	this->i=0;
++	this->x=x;
++	this->y=y;
++}
++
++void Task5::Counter::action(){
++	while(true)
++	{
++		Secure s;
++		kout.flush();
++		kout.setpos(x, y);
++		kout << "Counter: " << i++ << endl;
++	}
++}
++
++Task5::Task5() : Application(stacks[task5Stack]+stackSize),
++				 rotCursor(stacks[rotCursorStack]+stackSize, rotCursorX, rotCursorY),
++				 counter1(stacks[counter1Stack]+stackSize, counter1X, counter1Y),
++				 counter2(stacks[counter2Stack]+stackSize, counter2X, counter2Y)
++{
++	kout.setpos(31,1);
++	kout << "OOStuBs - Task 5" << endl << endl;
++}
++
++void Task5::action(){
++	cpu.enable_int();
++	scheduler.ready(rotCursor);
++	scheduler.ready(counter1);
++	scheduler.ready(counter2);
++}
+-- 
+1.7.2.2
+

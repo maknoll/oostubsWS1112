@@ -9,20 +9,20 @@
 #ifndef __application_include__
 #define __application_include__
 
-#include "thread/entrant.h"
+#include "syscall/thread.h"
 
 /** \brief Basis of OOStuBs-Applications
  *
  * This class defines the only application used by oo-StuBS. Every application
  * class is derived from this class.
  */        
-class Application : public Entrant{
+class Application : public Thread{
 public:
   /** \brief Default Constructor passing stack
    *
    * \param tos top of stack pointer
    **/
-  Application(void* tos) : Entrant(tos){}
+  Application(void* tos) : Thread(tos){}
 
   /** \brief Start the application
    *

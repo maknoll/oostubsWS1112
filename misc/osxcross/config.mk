@@ -1,7 +1,7 @@
-CC=/usr/local/gcc-4.5.2-for-linux32/bin/i586-pc-linux-gcc
-CXX=/usr/local/gcc-4.5.2-for-linux32/bin/i586-pc-linux-g++
-ASM=/usr/local/gcc-4.5.2-for-linux32/bin/i586-pc-linux-gcc
-LD=/usr/local/gcc-4.5.2-for-linux32/bin/i586-pc-linux-ld
+CC=/Users/martin/cross/linux32/bin/i586-pc-linux-gcc
+CXX=/Users/martin/cross/linux32/bin/i586-pc-linux-g++
+ASM=/Users/martin/cross/linux32/bin/i586-pc-linux-gcc
+LD=/Users/martin/cross/linux32/bin/i586-pc-linux-ld
 EMU=/usr/local/bin/qemu
 EMUTARGET=${TARGET}
 GDB=gdb

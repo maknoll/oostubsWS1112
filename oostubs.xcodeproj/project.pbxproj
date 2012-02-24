@@ -7,6 +7,16 @@
 	objects = {
 
 /* Begin PBXFileReference section */
+		5B02FEAE14CC2E030066FD7E /* watch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = watch.h; sourceTree = "<group>"; };
+		5B02FEAF14CC2E100066FD7E /* pit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pit.h; sourceTree = "<group>"; };
+		5B02FEB014CC2E300066FD7E /* task5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = task5.h; sourceTree = "<group>"; };
+		5B02FEB114CC2E500066FD7E /* watch.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = watch.cc; sourceTree = "<group>"; };
+		5B02FEB214CC2E690066FD7E /* pit.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pit.cc; sourceTree = "<group>"; };
+		5B02FEB314CC2E8C0066FD7E /* task5.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = task5.cc; sourceTree = "<group>"; };
+		5B02FEB514CC30E60066FD7E /* guarded_scheduler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = guarded_scheduler.h; sourceTree = "<group>"; };
+		5B02FEB614CC30E60066FD7E /* thread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = thread.h; sourceTree = "<group>"; };
+		5B02FEB814CC30FC0066FD7E /* thread.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = thread.cc; sourceTree = "<group>"; };
+		5B02FEB914CC31F80066FD7E /* guarded_scheduler.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = guarded_scheduler.cc; sourceTree = "<group>"; };
 		5B0C069314B7ACF0006A57A2 /* coroutine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = coroutine.h; sourceTree = "<group>"; };
 		5B0C069414B7ACF0006A57A2 /* dispatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dispatch.h; sourceTree = "<group>"; };
 		5B0C069514B7ACF0006A57A2 /* entrant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = entrant.h; sourceTree = "<group>"; };
@@ -66,6 +76,24 @@
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
+		5B02FEB414CC30E60066FD7E /* syscall */ = {
+			isa = PBXGroup;
+			children = (
+				5B02FEB514CC30E60066FD7E /* guarded_scheduler.h */,
+				5B02FEB614CC30E60066FD7E /* thread.h */,
+			);
+			path = syscall;
+			sourceTree = "<group>";
+		};
+		5B02FEB714CC30FC0066FD7E /* syscall */ = {
+			isa = PBXGroup;
+			children = (
+				5B02FEB914CC31F80066FD7E /* guarded_scheduler.cc */,
+				5B02FEB814CC30FC0066FD7E /* thread.cc */,
+			);
+			path = syscall;
+			sourceTree = "<group>";
+		};
 		5B0C069214B7ACF0006A57A2 /* thread */ = {
 			isa = PBXGroup;
 			children = (
@@ -100,6 +128,7 @@
 		5B739458145C5F2700C4F93D /* src */ = {
 			isa = PBXGroup;
 			children = (
+				5B02FEB714CC30FC0066FD7E /* syscall */,
 				5B0C069D14B7AD9A006A57A2 /* thread */,
 				5B739459145C5F2700C4F93D /* asm */,
 				5B73945C145C5F2700C4F93D /* device */,
@@ -125,6 +154,7 @@
 		5B73945C145C5F2700C4F93D /* device */ = {
 			isa = PBXGroup;
 			children = (
+				5B02FEB114CC2E500066FD7E /* watch.cc */,
 				5BE3C04514606BC500CACEE8 /* keyboard.cc */,
 				5BE3C04614606BC500CACEE8 /* panic.cc */,
 				5B73945D145C5F2700C4F93D /* cgastr.cc */,
@@ -144,6 +174,7 @@
 		5B739460145C5F2700C4F93D /* machine */ = {
 			isa = PBXGroup;
 			children = (
+				5B02FEB214CC2E690066FD7E /* pit.cc */,
 				5B0C069B14B7AD79006A57A2 /* toc.c */,
 				5BE3C04E14606C7A00CACEE8 /* pic.cc */,
 				5BE3C04F14606C7A00CACEE8 /* plugbox.cc */,
@@ -166,6 +197,7 @@
 		5B739468145C5F2700C4F93D /* user */ = {
 			isa = PBXGroup;
 			children = (
+				5B02FEB314CC2E8C0066FD7E /* task5.cc */,
 				5B0C069C14B7AD8A006A57A2 /* task4.cc */,
 				5B0F840814852E20009507D5 /* task3.cc */,
 				5BE3C05014606C9700CACEE8 /* task2.cc */,
@@ -177,6 +209,7 @@
 		5B73946B145C5F3200C4F93D /* include */ = {
 			isa = PBXGroup;
 			children = (
+				5B02FEB414CC30E60066FD7E /* syscall */,
 				5B0C069214B7ACF0006A57A2 /* thread */,
 				5BE3C05114606D1A00CACEE8 /* guard */,
 				5B73946C145C5F3200C4F93D /* config.h */,
@@ -191,6 +224,7 @@
 		5B73946D145C5F3200C4F93D /* device */ = {
 			isa = PBXGroup;
 			children = (
+				5B02FEAE14CC2E030066FD7E /* watch.h */,
 				5BE3C04814606BEC00CACEE8 /* keyboard.h */,
 				5BE3C04914606BEC00CACEE8 /* panic.h */,
 				5B73946E145C5F3200C4F93D /* cgastr.h */,
@@ -201,6 +235,7 @@
 		5B73946F145C5F3200C4F93D /* machine */ = {
 			isa = PBXGroup;
 			children = (
+				5B02FEAF14CC2E100066FD7E /* pit.h */,
 				5B0C069814B7AD1F006A57A2 /* toc.h */,
 				5BE3C04A14606C1700CACEE8 /* cpu.h */,
 				5BE3C04B14606C1700CACEE8 /* pic.h */,
@@ -228,6 +263,7 @@
 		5B739478145C5F3200C4F93D /* user */ = {
 			isa = PBXGroup;
 			children = (
+				5B02FEB014CC2E300066FD7E /* task5.h */,
 				5B0C069914B7AD30006A57A2 /* task4.h */,
 				5B0F840514852DDF009507D5 /* task3.h */,
 				5BE3C04D14606C4700CACEE8 /* task2.h */,

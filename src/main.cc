@@ -16,8 +16,9 @@
 #include "machine/plugbox.h"
 #include "device/keyboard.h"
 #include "guard/guard.h"
-#include "user/task4.h"
-#include "thread/scheduler.h"
+#include "user/task5.h"
+#include "syscall/guarded_scheduler.h"
+#include "device/watch.h"
 
 /* GLOBAL OBJECTS */
 
@@ -29,7 +30,8 @@ CPU cpu;
 Plugbox plugbox;
 Keyboard keyboard;
 Guard guard;
-Scheduler scheduler;
+Guarded_Scheduler scheduler;
+Watch watch(65535);
 
 /* METHODS  */
 
@@ -40,7 +42,7 @@ extern "C" void kernel(uint32_t magic, const Multiboot_Info* addr);
  * This is the entry point of the operating system.  If this function returns
  * all interrupts will be disabled and the cpu will be halted.
  *
- * \todo uncomment Task4
+ * \todo uncomment Task5
  *
  * \param magic bootloader magic value
  * \param addr address of multiboot info structure
@@ -52,7 +54,9 @@ void kernel(uint32_t magic, const Multiboot_Info* addr){
     
     keyboard.plugin();
     
-    Task4 task;
+    watch.windup();
+    
+    Task5 task;
     
     scheduler.ready(task);
     
