@@ -307,7 +307,7 @@
 		5B739449145C5E7E00C4F93D /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0430;
 				ORGANIZATIONNAME = "Otto-von-Guericke-Universität Magdeburg";
 			};
 			buildConfigurationList = 5B73944C145C5E7E00C4F93D /* Build configuration list for PBXProject "oostubs" */;
